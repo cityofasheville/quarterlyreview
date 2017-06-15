@@ -48,6 +48,7 @@ namespace QuarterlyReview
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
+            services.AddDbContext<QuarterlyReviewsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("QuarterlyReviewsConnection")));
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();

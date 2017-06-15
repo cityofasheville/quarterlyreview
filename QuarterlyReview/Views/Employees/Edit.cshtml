@@ -1,0 +1,106 @@
+@model QuarterlyReview.Models.Employees
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Employees</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="EmpId" />
+        <div class="form-group">
+            <label asp-for="Active" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Active" class="form-control" />
+                <span asp-validation-for="Active" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Employee" class="form-control" />
+                <span asp-validation-for="Employee" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EmpEmail" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="EmpEmail" class="form-control" />
+                <span asp-validation-for="EmpEmail" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Position" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DeptId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="DeptId" class="form-control" />
+                <span asp-validation-for="DeptId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Department" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Department" class="form-control" />
+                <span asp-validation-for="Department" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DivId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="DivId" class="form-control" asp-items="ViewBag.DivId"></select>
+                <span asp-validation-for="DivId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Division" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Division" class="form-control" />
+                <span asp-validation-for="Division" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SupId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SupId" class="form-control" />
+                <span asp-validation-for="SupId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Supervisor" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Supervisor" class="form-control" />
+                <span asp-validation-for="Supervisor" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SupEmail" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SupEmail" class="form-control" />
+                <span asp-validation-for="SupEmail" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
