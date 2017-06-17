@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace QuarterlyReview.Models
 {
@@ -20,7 +21,7 @@ namespace QuarterlyReview.Models
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-            var quarterlyReviewsContext = _context.Employees.Include(e => e.Div);
+            var quarterlyReviewsContext = _context.Employees.Where(e => (e.SupId == 1316)).Include(e => e.Div);
             return View(await quarterlyReviewsContext.ToListAsync());
         }
 
@@ -32,9 +33,12 @@ namespace QuarterlyReview.Models
                 return NotFound();
             }
 
-            var employees = await _context.Employees
-                .Include(e => e.Div)
-                .SingleOrDefaultAsync(m => m.EmpId == id);
+            //            var employees = await _context.Employees
+            //                .Include(e => e.Div)
+            //                .SingleOrDefaultAsync(m => m.EmpId == id);
+            var empId = new SqlParameter("@UserEmpId", "1316");
+            var employees = await _context.Employees.FromSql("EXECUTE dbo.avp_Get_Employee @UserEmpId", empId)
+                .SingleOrDefaultAsync<Employees>();
             if (employees == null)
             {
                 return NotFound();

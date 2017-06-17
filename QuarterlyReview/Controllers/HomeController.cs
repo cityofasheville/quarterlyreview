@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using QuarterlyReview.Models;
 using Microsoft.Extensions.Logging;
+using System.Data.SqlClient;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuarterlyReview.Controllers
 {
@@ -13,25 +16,43 @@ namespace QuarterlyReview.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager = null;
         private readonly ILogger _logger;
+        private readonly QuarterlyReviewsContext _context;
 
         public HomeController(
             UserManager<ApplicationUser> userManager,
-            ILoggerFactory loggerFactory
+            ILoggerFactory loggerFactory,
+            QuarterlyReviewsContext context
             )
         {
             _userManager = userManager;
             _logger = loggerFactory.CreateLogger<HomeController>();
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
             if (User.Identity.IsAuthenticated)
             {
+                string getEmployee = "EXECUTE dbo.avp_Get_Employee @UserEmpId";
+                string getMyEmployees = "EXECUTE dbo.avp_Get_My_Employees @UserEmpId";
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
-
+                ViewData["EmployeeID"] = user.EmployeeID;
                 _logger.LogInformation(1, "Yippee 1 user email is {Email} and ID = {Id}.", user.Email, user.EmployeeID);
+                //var empId = new SqlParameter("@UserEmpId", user.EmployeeID);
+                var empId = new SqlParameter("@UserEmpId", "1316");
+                var employee = await _context.Employees.FromSql(getEmployee, empId)
+                    .SingleOrDefaultAsync<Employees>();
+                ViewData["EmployeeID"] = user.EmployeeID;
+                ViewData["Supervisor"] = employee.Supervisor;
+                var myEmployees = await _context.Employees.FromSql(getMyEmployees, empId)
+                    .ToListAsync<Employees>();
+                ViewData["Employees"] = myEmployees;
+                int len = myEmployees.Count();
+                ViewData["EmployeeID"] = len;
+                return View(myEmployees);
+
             }
-            return View();
+            return View(null);
         }
 
         public IActionResult About()
