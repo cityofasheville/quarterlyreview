@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using QuarterlyReview.Data;
 using QuarterlyReview.Models;
 using QuarterlyReview.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace QuarterlyReview
 {
@@ -47,7 +48,11 @@ namespace QuarterlyReview
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.SslPort = 44337;
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
             services.AddDbContext<QuarterlyReviewsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("QuarterlyReviewsConnection")));
 
             // Add application services.
@@ -59,7 +64,7 @@ namespace QuarterlyReview
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddDebug().AddConsole();
 
             if (env.IsDevelopment())
             {
@@ -77,7 +82,11 @@ namespace QuarterlyReview
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-
+            app.UseGoogleAuthentication(new GoogleOptions()
+            {
+                ClientId = Configuration["Authentication:Google:ClientId"],
+                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
