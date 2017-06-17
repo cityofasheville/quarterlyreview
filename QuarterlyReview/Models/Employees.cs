@@ -20,6 +20,9 @@ namespace QuarterlyReview.Models
         public string Department { get; set; }
         public string DivId { get; set; }
         public string Division { get; set; }
+        public DateTime? LastReviewed { get; set; }
+        public DateTime? ReviewBy { get; set; }
+        public int? CurrentReview { get; set; }
         public int? SupId { get; set; }
         public string Supervisor { get; set; }
         public string SupEmail { get; set; }
