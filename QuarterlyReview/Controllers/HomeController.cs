@@ -29,7 +29,7 @@ namespace QuarterlyReview.Controllers
             {
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
 
-                _logger.LogInformation(1, "Yippee 1 user email is {Email} and ID = {Id}.", user.Email, user.Id);
+                _logger.LogInformation(1, "Yippee 1 user email is {Email} and ID = {Id}.", user.Email, user.EmployeeID);
             }
             return View();
         }
