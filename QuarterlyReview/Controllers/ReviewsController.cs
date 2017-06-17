@@ -66,7 +66,6 @@ namespace QuarterlyReview.Controllers
                 return NotFound();
             }
             string getEmployee = "EXECUTE dbo.avp_Get_Employee @UserEmpId";
-            ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
             var empId = new SqlParameter("@UserEmpId", id);
             var employee = await _context.Employees.FromSql(getEmployee, empId)
                 .SingleOrDefaultAsync<Employees>();
@@ -123,39 +122,19 @@ namespace QuarterlyReview.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RtId,RtName,RtDesc,RId,Status,StatusDate,SupId,EmpId,DivId,Position,PeriodStart,PeriodEnd")] Reviews reviews)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id != reviews.RId)
+
+            if (HttpContext.Request.Form["rid"] == "1b2")
             {
-                return NotFound();
+                // xx
             }
 
-            if (ModelState.IsValid)
+            return RedirectToRoute(new
             {
-                try
-                {
-                    _context.Update(reviews);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReviewsExists(reviews.RId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction("Index");
-            }
-            ViewData["DivId"] = new SelectList(_context.DeptToDivMapping, "DivId", "DivId", reviews.DivId);
-            ViewData["EmpId"] = new SelectList(_context.Employees, "EmpId", "Active", reviews.EmpId);
-            ViewData["RtId"] = new SelectList(_context.ReviewTemplate, "RtId", "Description", reviews.RtId);
-            ViewData["Status"] = new SelectList(_context.ReviewStatusList, "ReviewStatus", "ReviewStatus", reviews.Status);
-            ViewData["SupId"] = new SelectList(_context.Employees, "EmpId", "Active", reviews.SupId);
-            return View(reviews);
+                controller = "Home",
+                action = "Index"
+            });
         }
 
         // GET: Reviews/Delete/5
