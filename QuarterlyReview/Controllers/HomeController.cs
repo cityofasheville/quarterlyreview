@@ -38,8 +38,7 @@ namespace QuarterlyReview.Controllers
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
                 ViewData["EmployeeID"] = user.EmployeeID;
                 _logger.LogInformation(1, "Yippee 1 user email is {Email} and ID = {Id}.", user.Email, user.EmployeeID);
-                //var empId = new SqlParameter("@UserEmpId", user.EmployeeID);
-                var empId = new SqlParameter("@UserEmpId", "1316");
+                var empId = new SqlParameter("@UserEmpId", user.EmployeeID);
                 var employee = await _context.Employees.FromSql(getEmployee, empId)
                     .SingleOrDefaultAsync<Employees>();
                 ViewData["EmployeeID"] = user.EmployeeID;
@@ -47,8 +46,7 @@ namespace QuarterlyReview.Controllers
                 var myEmployees = await _context.Employees.FromSql(getMyEmployees, empId)
                     .ToListAsync<Employees>();
                 ViewData["Employees"] = myEmployees;
-                int len = myEmployees.Count();
-                ViewData["EmployeeID"] = len;
+                ViewData["Employee"] = employee.Employee;
                 return View(myEmployees);
 
             }
