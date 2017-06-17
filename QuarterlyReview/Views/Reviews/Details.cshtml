@@ -1,0 +1,84 @@
+@model QuarterlyReview.Models.Reviews
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Reviews</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.RtName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RtName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RtDesc)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RtDesc)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.StatusDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StatusDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Position)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Position)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeriodStart)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeriodStart)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeriodEnd)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeriodEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Div)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Div.DivId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Emp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Emp.Active)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Rt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Rt.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.StatusNavigation)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StatusNavigation.ReviewStatus)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Sup)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Sup.Active)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.RId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

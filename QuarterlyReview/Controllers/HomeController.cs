@@ -33,6 +33,8 @@ namespace QuarterlyReview.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
+                DateTime startDate = DateTime.Now;
+                DateTime endDate = startDate.AddDays(90);
                 string getEmployee = "EXECUTE dbo.avp_Get_Employee @UserEmpId";
                 string getMyEmployees = "EXECUTE dbo.avp_Get_My_Employees @UserEmpId";
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
@@ -43,6 +45,8 @@ namespace QuarterlyReview.Controllers
                     .SingleOrDefaultAsync<Employees>();
                 ViewData["EmployeeID"] = user.EmployeeID;
                 ViewData["Supervisor"] = employee.Supervisor;
+                //ViewData["Supervisor"] = String.Format("Hello {0}", employee.Supervisor);
+
                 var myEmployees = await _context.Employees.FromSql(getMyEmployees, empId)
                     .ToListAsync<Employees>();
                 ViewData["Employees"] = myEmployees;
