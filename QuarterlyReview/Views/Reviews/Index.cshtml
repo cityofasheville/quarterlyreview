@@ -1,0 +1,95 @@
+@model IEnumerable<QuarterlyReview.Models.Reviews>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.RtName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RtDesc)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StatusDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Position)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PeriodStart)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PeriodEnd)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Div)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Emp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StatusNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sup)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RtName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RtDesc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeriodStart)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeriodEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Div.DivId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Emp.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rt.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusNavigation.ReviewStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sup.Active)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
