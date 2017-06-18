@@ -1,4 +1,4 @@
-@model QuarterlyReview.Models.Reviews
+@model QuarterlyReview.Models.DisplayReview
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,90 +10,37 @@
     <div class="form-horizontal">
         <h4>Reviews</h4>
         <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <p>Review (id @Model.reviewID) of @Model.employeeName by @Model.reviewerName</p>
         <div class="form-group">
-            <label asp-for="RtId" class="control-label col-md-2"></label>
+            <label for="startDate" class="col-md-2 control-label">From</label>
             <div class="col-md-10">
-                <select asp-for="RtId" class="form-control" asp-items="ViewBag.RtId"></select>
-                <span asp-validation-for="RtId" class="text-danger"></span>
+                <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
+            </div>
+            <label for="endDate" class="col-md-2 control-label">To</label>
+            <div class="col-md-10">
+                <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="RtName" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="RtName" class="form-control" />
-                <span asp-validation-for="RtName" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="RtDesc" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="RtDesc" class="form-control" />
-                <span asp-validation-for="RtDesc" class="text-danger"></span>
-            </div>
-        </div>
-    <input type="hidden" asp-for="RId" />
-        <div class="form-group">
-            <label asp-for="Status" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="Status" class="form-control" asp-items="ViewBag.Status"></select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="StatusDate" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="StatusDate" class="form-control" />
-                <span asp-validation-for="StatusDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="SupId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="SupId" class="form-control" asp-items="ViewBag.SupId"></select>
-                <span asp-validation-for="SupId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="EmpId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="EmpId" class="form-control" asp-items="ViewBag.EmpId"></select>
-                <span asp-validation-for="EmpId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="DivId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <select asp-for="DivId" class="form-control" asp-items="ViewBag.DivId"></select>
-                <span asp-validation-for="DivId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Position" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Position" class="form-control" />
-                <span asp-validation-for="Position" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PeriodStart" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PeriodStart" class="form-control" />
-                <span asp-validation-for="PeriodStart" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PeriodEnd" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PeriodEnd" class="form-control" />
-                <span asp-validation-for="PeriodEnd" class="text-danger"></span>
-            </div>
-        </div>
+        <hr/>
+        @if (Model.questions.Count() > 0)
+        {
+            @foreach (var item in Model.questions)
+            {
+                @Html.Raw(item.question)
+                <textarea name="qanswer-@item.qID" rows="4" cols="200">
+                    @Html.Raw((item.answer == null) ? "" : item.answer)
+                </textarea>
+            }
+            <br />
+        }
+
+        @Html.Hidden("review-id", Model.reviewID);
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
+
     </div>
 </form>
 

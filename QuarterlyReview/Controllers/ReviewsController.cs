@@ -75,9 +75,9 @@ namespace QuarterlyReview.Controllers
                 DateTime startDate = DateTime.Now;
                 DateTime endDate = startDate.AddDays(90);
 
-                var command = _context.Database.GetDbConnection().CreateCommand();
+                var createReviewCmd = _context.Database.GetDbConnection().CreateCommand();
                 // Call the avp_New_Review stored procedure and get the resulting ID
-                command.CommandText = "DECLARE	@return_value int " +
+                createReviewCmd.CommandText = "DECLARE	@return_value int " +
                     "EXEC	@return_value = [dbo].[avp_New_Review] " +
                     String.Format("@EmpID = {0}, @SupID = {1}, @RT_ID = 2, @PeriodStart = \"{2}\", @PeriodEnd = \"{3}\" ",
                                   employee.EmpId, employee.SupId,
@@ -86,35 +86,57 @@ namespace QuarterlyReview.Controllers
                     "SELECT  'ReturnValue' = @return_value";
 
                 _context.Database.OpenConnection();
-                using (var result = command.ExecuteReader())
+                using (var result = createReviewCmd.ExecuteReader())
                 {
                     if (result.HasRows)
                     {
-                        //while (result.Read())
-                        //{
-                        //    employee.CurrentReview = result.GetInt32(0);
-                        //}
                         if (result.Read()) employee.CurrentReview = result.GetInt32(0);
                     }
                 }
                 return NotFound();
             }
-            else
+
+            // Now read the review in
+            DisplayReview rev = null;
+
+            var getReviewCmd = _context.Database.GetDbConnection().CreateCommand();
+
+            getReviewCmd.CommandText = "EXEC [dbo].[avp_Get_A_Review] " +
+                String.Format("@ReviewID = {0}", employee.CurrentReview);
+
+            _context.Database.OpenConnection();
+            using (var result = getReviewCmd.ExecuteReader())
             {
-                _logger.LogInformation(1, "HaveCurrent {currentid}.", employee.CurrentReview);
+                if (result.HasRows)
+                {
+                    while (result.Read())
+                    {
+                        if (rev == null)
+                        {
+                            rev = new DisplayReview(
+                                result.GetInt32(1), // R_ID
+                                result.GetInt32(4), // ReviewerID
+                                result.GetInt32(5), // EmpID
+                                result.GetString(7), // Position
+                                result.GetDateTime(8), // PeriodStart
+                                result.GetDateTime(9), // PeriodEnd
+                                result.GetString(19), // Reviewer
+                                result.GetString(22) // Employee
+                                );
+                        }
+                        string qtext = result.IsDBNull(13) ? null : result.GetString(13);
+                        string atext = result.IsDBNull(15) ? null : result.GetString(15);
+                        DisplayQuestion q = new DisplayQuestion(
+                            result.GetInt32(14), // Q_ID
+                            result.GetString(12), // QT_Type
+                            qtext, // QT_Question
+                            atext // Answer
+                            );
+                        rev.questions.Add(q);
+                    }
+                }
             }
-            ViewData["Employee"] = employee.Employee;
-            var reviews = await _context.Reviews.SingleOrDefaultAsync(m => m.RId == id);
-            if (reviews == null)
-            {
-                return NotFound();
-            }
-            ViewData["DivId"] = new SelectList(_context.DeptToDivMapping, "DivId", "DivId", reviews.DivId);
-            ViewData["EmpId"] = new SelectList(_context.Employees, "EmpId", "Active", reviews.EmpId);
-            ViewData["RtId"] = new SelectList(_context.ReviewTemplate, "RtId", "Description", reviews.RtId);
-            ViewData["Status"] = new SelectList(_context.ReviewStatusList, "ReviewStatus", "ReviewStatus", reviews.Status);
-            ViewData["SupId"] = new SelectList(_context.Employees, "EmpId", "Active", reviews.SupId);
-            return View(reviews);
+            return View(rev);
         }
 
         // POST: Reviews/Edit/5
@@ -124,51 +146,41 @@ namespace QuarterlyReview.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id)
         {
-
-            if (HttpContext.Request.Form["rid"] == "1b2")
+            Microsoft.AspNetCore.Http.IFormCollection form = Request.Form;
+            if (form.ContainsKey("review-id"))
             {
-                // xx
-            }
+                int r_id = Int32.Parse(Request.Form["review-id"]);
+                Reviews review = _context.Reviews.Find(r_id);
+                if (review == null) return NotFound();
+                if (form.ContainsKey("startDate"))
+                {
+                    review.PeriodStart = Convert.ToDateTime(form["startDate"]);
+                }
+                if (form.ContainsKey("endDate"))
+                {
+                    review.PeriodEnd = Convert.ToDateTime(form["endDate"]);
+                }
 
+                foreach (var key in form)
+                {
+                    if (key.Key.StartsWith("qanswer-"))
+                    {
+                        int q_id = Int32.Parse(key.Key.Split('-')[1]);
+                        Questions question = _context.Questions.Find(q_id);
+                        question.Answer = key.Value;
+                    }
+                }
+                _context.SaveChanges();
+            }
+            else
+            {
+                return BadRequest();
+            }
             return RedirectToRoute(new
             {
                 controller = "Home",
                 action = "Index"
             });
-        }
-
-        // GET: Reviews/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reviews = await _context.Reviews
-                .Include(r => r.Div)
-                .Include(r => r.Emp)
-                .Include(r => r.Rt)
-                .Include(r => r.StatusNavigation)
-                .Include(r => r.Sup)
-                .SingleOrDefaultAsync(m => m.RId == id);
-            if (reviews == null)
-            {
-                return NotFound();
-            }
-
-            return View(reviews);
-        }
-
-        // POST: Reviews/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var reviews = await _context.Reviews.SingleOrDefaultAsync(m => m.RId == id);
-            _context.Reviews.Remove(reviews);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
         }
 
         private bool ReviewsExists(int id)
