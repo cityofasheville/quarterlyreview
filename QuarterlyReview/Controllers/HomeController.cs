@@ -39,7 +39,6 @@ namespace QuarterlyReview.Controllers
                 string getMyEmployees = "EXECUTE dbo.avp_Get_My_Employees @UserEmpId";
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
                 ViewData["EmployeeID"] = user.EmployeeID;
-                _logger.LogInformation(1, "Yippee 1 user email is {Email} and ID = {Id}.", user.Email, user.EmployeeID);
                 var empId = new SqlParameter("@UserEmpId", user.EmployeeID);
                 var employee = await _context.Employees.FromSql(getEmployee, empId)
                     .SingleOrDefaultAsync<Employees>();

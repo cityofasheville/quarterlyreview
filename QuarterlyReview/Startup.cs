@@ -28,7 +28,7 @@ namespace QuarterlyReview
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets<Startup>();
+                //builder.AddUserSecrets<Startup>();
             }
 
             builder.AddEnvironmentVariables();
@@ -82,11 +82,11 @@ namespace QuarterlyReview
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-            app.UseGoogleAuthentication(new GoogleOptions()
-            {
-                ClientId = Configuration["Authentication:Google:ClientId"],
-                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
-            });
+            //app.UseGoogleAuthentication(new GoogleOptions()
+            //{
+            //    ClientId = Configuration["Authentication:Google:ClientId"],
+            //    ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+            //});
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
