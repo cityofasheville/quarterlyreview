@@ -52,6 +52,23 @@ namespace QuarterlyReview.Controllers
             return (retVal == 'Y') ? true : false;
         }
 
+        private string GetRole(int userID, Employees employee)
+        {
+            string role = "Employee";
+            if (userID != employee.EmpId)
+            {
+                if (userID == employee.SupId)
+                {
+                    role = "Supervisor";
+                }
+                else
+                {
+                    role = "Other";
+                }
+            }
+            return role;
+        }
+
         // GET: Reviews
         public async Task<IActionResult> Index(string emp)
         {
@@ -82,6 +99,8 @@ namespace QuarterlyReview.Controllers
 
                 var employee = await _context.Employees.FromSql(getEmployee, empId)
                     .SingleOrDefaultAsync<Employees>();
+                string role = GetRole(Convert.ToInt32(user.EmployeeID), employee);
+
                 var myEmployees = await _context.Employees.FromSql(getMyEmployees, empId)
                     .ToListAsync<Employees>();
                 List<DisplayReviewSummary> myReviews = new List<DisplayReviewSummary>();
@@ -123,7 +142,7 @@ namespace QuarterlyReview.Controllers
                 }
 
                 // Done
-
+                ViewData["Role"] = role;
                 ViewData["EmployeeID"] = user.EmployeeID;
                 ViewData["EmployeeID"] = user.EmployeeID;
                 ViewData["Supervisor"] = employee.Supervisor;
@@ -139,16 +158,13 @@ namespace QuarterlyReview.Controllers
         // GET: Reviews/Review/5?emp=NNNN
         public async Task<IActionResult> Review(int? id, string emp)
         {
-            _logger.LogInformation("RevRev: start");
             if (User.Identity.IsAuthenticated)
             {
                 int reviewID = (id == null) ? -1 : (int)id;
-                _logger.LogInformation("RevRev: authenticated with revid = {val}", reviewID);
 
                 // emp is the employee whose review it is - it is a required parameter
                 if (emp == null) return NotFound();
                 string targetID = emp.Trim();
-                _logger.LogInformation("RevRev: targetID = {val}", targetID);
 
                 // Make sure user has permission to view
                 ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
@@ -158,7 +174,6 @@ namespace QuarterlyReview.Controllers
                 {
                     if (!viewAllowed(user.EmployeeID, targetID))
                     {
-                        _logger.LogInformation("RevRev: user {uid} is not allowed to view {tid}", user.EmployeeID, targetID);
                         return RedirectToRoute(new
                         {
                             controller = "Reviews",
@@ -172,16 +187,15 @@ namespace QuarterlyReview.Controllers
                 var empId = new SqlParameter("@UserEmpId", targetID);
                 var employee = await _context.Employees.FromSql(getEmployee, empId)
                     .SingleOrDefaultAsync<Employees>();
+                string role = GetRole(Convert.ToInt32(user.EmployeeID), employee);
 
                 if (reviewID < 0) // Just get the current one.
                 {
-                    _logger.LogInformation("Getting the current review");
                     if (employee.CurrentReview == null)
                     {
                         // We need to create a new review for this employee
                         DateTime startDate = DateTime.Now;
                         DateTime endDate = startDate.AddDays(90);
-                        _logger.LogInformation("Creating a new review");
 
                         var createReviewCmd = _context.Database.GetDbConnection().CreateCommand();
                         // Call the avp_New_Review stored procedure and get the resulting ID
@@ -203,19 +217,16 @@ namespace QuarterlyReview.Controllers
                         }
                     }
                     reviewID = (int) employee.CurrentReview;
-                    _logger.LogInformation("Current review is {rid}", reviewID);
 
                 }
 
                 // Now read the review
                 DisplayReview rev = null;
-                _logger.LogInformation("Now read the review");
 
                 var getReviewCmd = _context.Database.GetDbConnection().CreateCommand();
 
                 getReviewCmd.CommandText = "EXEC [dbo].[avp_Get_A_Review] " +
                     String.Format("@ReviewID = {0}", reviewID);
-
                 _context.Database.OpenConnection();
                 using (var result = getReviewCmd.ExecuteReader())
                 {
@@ -227,6 +238,7 @@ namespace QuarterlyReview.Controllers
                             {
                                 rev = new DisplayReview(
                                     result.GetInt32(1), // R_ID
+                                    result.GetString(2), // Status
                                     result.GetInt32(4), // ReviewerID
                                     result.GetInt32(5), // EmpID
                                     result.GetString(7), // Position
@@ -248,10 +260,11 @@ namespace QuarterlyReview.Controllers
                         }
                     }
                 }
-                _logger.LogInformation("RevRev: And show it!");
+
+                ViewData["Role"] = role;
+                ViewData["ReviewStatus"] = rev.status;
                 return View(rev);
             }
-            _logger.LogInformation("RevRev: WOOPS");
 
             return NotFound();
         }
