@@ -12,13 +12,13 @@
         <hr />
         <p>Review (id @Model.reviewID) of @Model.employeeName by @Model.reviewerName</p>
         <div class="form-group">
-            <label for="startDate" class="col-md-2 control-label">From</label>
+            <label for="startDate" class="col-md-2 control-label">From:</label>
             <div class="col-md-10">
-                <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
+                <input type="date" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
             </div>
-            <label for="endDate" class="col-md-2 control-label">To</label>
+            <label for="endDate" class="col-md-2 control-label">To:</label>
             <div class="col-md-10">
-                <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
+                <input type="date" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
             </div>
         </div>
         <hr/>
