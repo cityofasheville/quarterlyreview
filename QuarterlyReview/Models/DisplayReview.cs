@@ -8,6 +8,7 @@ namespace QuarterlyReview.Models
     public class DisplayReview
     {
         public int reviewID { get; set; }
+        public string status { get; set; }
         public int supervisorID { get; set; }
         public int employeeID { get; set; }
         public string position { get; set; }
@@ -20,10 +21,11 @@ namespace QuarterlyReview.Models
         public List<DisplayQuestion> questions { get; set; }
 
 
-        public DisplayReview(int id, int sid, int eid, string pos,
+        public DisplayReview(int id, string stat, int sid, int eid, string pos,
             DateTime start, DateTime end, string revName, string empName)
         {
             reviewID = id;
+            status = stat;
             supervisorID = sid;
             employeeID = eid;
             position = pos;
