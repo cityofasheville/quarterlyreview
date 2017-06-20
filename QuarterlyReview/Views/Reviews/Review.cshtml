@@ -34,7 +34,23 @@
             <br />
         }
 
-        @Html.Hidden("review-id", Model.reviewID);
+        @Html.Hidden("review-id", Model.reviewID)
+        <br/>
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table">
+                    <tr>
+                        <td><b>Role:</b></td>
+                        <td>@ViewData["Role"]</td>
+                    </tr>
+                    <tr>
+                        <td><b>Review Status</b></td>
+                        <td>@ViewData["ReviewStatus"]</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <br />
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

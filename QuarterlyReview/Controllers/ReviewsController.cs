@@ -373,6 +373,7 @@ namespace QuarterlyReview.Controllers
                         {
                             rev = new DisplayReview(
                                 result.GetInt32(1), // R_ID
+                                result.GetString(2), // Status
                                 result.GetInt32(4), // ReviewerID
                                 result.GetInt32(5), // EmpID
                                 result.GetString(7), // Position
