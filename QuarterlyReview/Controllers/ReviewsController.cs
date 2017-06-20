@@ -27,11 +27,113 @@ namespace QuarterlyReview.Controllers
             _logger = loggerFactory.CreateLogger<ReviewsController>();
         }
 
-        // GET: Reviews
-        public async Task<IActionResult> Index()
+        private Boolean viewAllowed (string userID, string targetID)
         {
-            var quarterlyReviewsContext = _context.Reviews.Include(r => r.Div).Include(r => r.Emp).Include(r => r.Rt).Include(r => r.StatusNavigation).Include(r => r.Sup);
-            return View(await quarterlyReviewsContext.ToListAsync());
+            var mayViewCmd = _context.Database.GetDbConnection().CreateCommand();
+            // Call the avp_New_Review stored procedure and get the resulting ID
+            mayViewCmd.CommandText = "DECLARE	@May_View nchar(1) " +
+                "EXEC [dbo].[avp_May_View_Emp] " +
+                String.Format("@UserEmpID = {0}, @EmpID = {1},", userID, targetID) +
+                "@May_View = @May_View OUTPUT " +
+                "SELECT  @May_View as N'@May_View'";
+
+            _context.Database.OpenConnection();
+            Char retVal = 'N';
+            using (var result = mayViewCmd.ExecuteReader())
+            {
+                if (result.HasRows)
+                {
+                    if (result.Read())
+                    {
+                        retVal = result.GetString(0)[0];
+                    }
+                }
+            }
+            return (retVal == 'Y') ? true : false;
+        }
+
+        // GET: Reviews
+        public async Task<IActionResult> Index(string emp)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                ApplicationUser user = await _userManager.GetUserAsync(HttpContext.User);
+                DateTime startDate = DateTime.Now;
+                DateTime endDate = startDate.AddDays(90);
+                string getEmployee = "EXECUTE dbo.avp_Get_Employee @UserEmpId";
+                string getMyEmployees = "EXECUTE dbo.avp_Get_My_Employees @UserEmpId";
+                
+                string targetID = (emp == null) ? user.EmployeeID : emp.Trim();
+
+                // Redirect to their own page if they don't have permission to view
+                if (targetID != user.EmployeeID)
+                {
+                    if (!viewAllowed(user.EmployeeID, targetID))
+                    {
+                        return RedirectToRoute(new
+                        {
+                            controller = "Reviews",
+                            action = "Index"
+                        });
+                    }
+                }
+
+                var empId = new SqlParameter("@UserEmpId", targetID);
+
+                var employee = await _context.Employees.FromSql(getEmployee, empId)
+                    .SingleOrDefaultAsync<Employees>();
+                var myEmployees = await _context.Employees.FromSql(getMyEmployees, empId)
+                    .ToListAsync<Employees>();
+                List<DisplayReviewSummary> myReviews = new List<DisplayReviewSummary>();
+
+                // Read reviews of me
+
+                var getMyReviewsCmd = _context.Database.GetDbConnection().CreateCommand();
+
+                int mrid = employee.EmpId;
+                // mrid = 3399;
+                getMyReviewsCmd.CommandText = "EXEC [dbo].[avp_Reviews_of_Me] " +
+                    String.Format("@UserEmpID = {0}", mrid);
+
+                _context.Database.OpenConnection();
+                using (var result = getMyReviewsCmd.ExecuteReader())
+                {
+                    if (result.HasRows)
+                    {
+                        while (result.Read())
+                        {
+                            DisplayReviewSummary rev = new DisplayReviewSummary(
+                                result.GetInt32(0), // RT_ID
+                                result.GetInt32(1), // R_ID
+                                result.GetString(2), // RT_Name
+                                result.GetString(3), // RT_Desc
+                                result.GetString(4), // Status
+                                result.GetDateTime(5), // Status_Date
+                                result.GetInt32(6), // SupID
+                                result.GetInt32(7), // EmpID
+                                result.GetString(8), // Employee
+                                result.GetString(9), // DivID
+                                result.GetString(10), // Position
+                                result.GetDateTime(11), // PeriodStart
+                                result.GetDateTime(12) // PeriodEnd
+                             );
+                            myReviews.Add(rev);
+                        }
+                    }
+                }
+
+                // Done
+
+                ViewData["EmployeeID"] = user.EmployeeID;
+                ViewData["EmployeeID"] = user.EmployeeID;
+                ViewData["Supervisor"] = employee.Supervisor;
+                ViewData["Employees"] = myEmployees;
+                ViewData["Employee"] = employee.Employee;
+                ViewData["MyReviews"] = myReviews;
+                return View(myEmployees);
+
+            }
+            return View(null);
         }
 
         // GET: Reviews/Details/5
