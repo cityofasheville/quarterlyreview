@@ -3,6 +3,22 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
+<script>
+tinymce.init({
+        selector: 'textarea',
+        inline: true,
+        browser_spellcheck: true,
+        branding: false,
+      
+
+    });</script>
+
 
 <h2>Edit</h2>
 
@@ -14,22 +30,23 @@
         <div class="form-group">
             <label for="startDate" class="col-md-2 control-label">From</label>
             <div class="col-md-10">
-                <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
+                <input type="date" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")" />
             </div>
             <label for="endDate" class="col-md-2 control-label">To</label>
             <div class="col-md-10">
-                <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
+                <input type="date"  class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
             </div>
         </div>
-        <hr/>
+        <hr />
         @if (Model.questions.Count() > 0)
         {
             @foreach (var item in Model.questions)
             {
                 @Html.Raw(item.question)
-                <textarea name="qanswer-@item.qID" rows="4" cols="200">
+                <textarea name="qanswer-@item.qID"  rows="4" cols="200" spellcheck="true" branding ="false">
                     @Html.Raw((item.answer == null) ? "" : item.answer)
                 </textarea>
+
             }
             <br />
         }
