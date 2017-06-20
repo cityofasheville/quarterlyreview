@@ -7,7 +7,7 @@
 @inject UserManager<ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Reviews Page";
     ViewData["Today"] = DateTime.Now.ToString("MMM dd, yyyy");
     List<DisplayReviewSummary> myReviews = (List<DisplayReviewSummary>)ViewData["MyReviews"];
 }
@@ -43,10 +43,10 @@
                         {
                             <tr>
                                 <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Edit" asp-route-id="@item.EmpId">Current</a>
+                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">Current</a>
                                 </td>
                                 <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-id="@item.EmpId">@item.Employee</a>
+                                    <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
                                 </td>
                                 <td>@item.EmpId</td>
                                 <td>@item.LastReviewed</td>
@@ -59,10 +59,7 @@
             </div>
         </div>
     }
-    else
-    {
-        <p>You have no supervised employees.</p>
-    }
+
     <br />
 
     <div class="row">
@@ -95,7 +92,9 @@
                             <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.periodStart.ToString("MMM dd, yyyy")</td>
                             <td>@item.periodEnd.ToString("MMM dd, yyyy")</td>
-                            <td><a href="#">View</a> </td>
+                            <td>
+                                <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">View</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
