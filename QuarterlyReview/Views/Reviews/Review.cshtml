@@ -14,7 +14,7 @@
         <hr />
         <p>Review (id @Model.reviewID) of @Model.employeeName by @Model.reviewerName</p>
         <div class="form-group">
-            <label for="startDate" class="col-md-2 control-label">From:</label>
+            <label for="startDate" class="col-md-2 control-label">From:</label> 
             <div class="col-md-10">
                 <input type="date" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
             </div>
@@ -29,7 +29,7 @@
             @foreach (var item in Model.questions)
             {
                 @Html.Raw(item.question)
-                <textarea name="qanswer-@item.qID" rows="4" cols="200">
+                <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
                     @Html.Raw((item.answer == null) ? "" : item.answer)
                 </textarea>
             }
