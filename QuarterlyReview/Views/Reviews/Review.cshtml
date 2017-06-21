@@ -40,21 +40,6 @@
         @Html.Hidden("review-role", ViewData["Role"])
         @Html.Hidden("review-status", ViewData["ReviewStatus"])
         <br/>
-        <div class="row">
-            <div class="col-md-4">
-                <table class="table">
-                    <tr>
-                        <td><b>Role:</b></td>
-                        <td>@ViewData["Role"]</td>
-                    </tr>
-                    <tr>
-                        <td><b>Review Status</b></td>
-                        <td>@ViewData["ReviewStatus"]</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <br />
         @if ((string)ViewData["Role"] == "Supervisor")
         {
             if ((string)ViewData["ReviewStatus"] == "Open")
