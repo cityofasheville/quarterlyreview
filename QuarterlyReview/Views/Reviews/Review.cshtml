@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="~/css/site.css" />
 }
 
+
+
+
 <h2>Edit</h2>
 
 <form asp-action="Review">
@@ -13,17 +16,28 @@
         <h4>Reviews</h4>
         <hr />
         <p>Review (id @Model.reviewID) of @Model.employeeName by @Model.reviewerName</p>
+
         <div class="form-group">
-            <label for="startDate" class="col-md-2 control-label">From:</label> 
+            <label for="startDate" class="col-md-2 control-label">From:</label>
             <div class="col-md-10">
-                <input type="date" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
+                <div class="input-group date" data-provide="datepicker">
+                    <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("dd/mm/yyyy")" />
+                    <div class="input-group-addon" glyphicon glyphicon-th>
+                    </div>
+                </div>
             </div>
             <label for="endDate" class="col-md-2 control-label">To:</label>
             <div class="col-md-10">
-                <input type="date" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
+                <div class=" input-group date" data-provide="datepicker">
+                    <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("dd/mm/yyyy")" />
+                    <div class="input-group-addon" glyphicon glyphicon-th>
+                    </div>
+                </div>
             </div>
+
         </div>
-        <hr/>
+
+        <hr />
         @if (Model.questions.Count() > 0)
         {
             @foreach (var item in Model.questions)
@@ -39,7 +53,7 @@
         @Html.Hidden("review-id", Model.reviewID)
         @Html.Hidden("review-role", ViewData["Role"])
         @Html.Hidden("review-status", ViewData["ReviewStatus"])
-        <br/>
+        <br />
         @if ((string)ViewData["Role"] == "Supervisor")
         {
             if ((string)ViewData["ReviewStatus"] == "Open")
@@ -78,6 +92,7 @@
         </div>
 
     </div>
+
 </form>
 
 <div>
