@@ -8,7 +8,7 @@
 
 <h2>Edit</h2>
 
-<form asp-action="Edit">
+<form asp-action="Review">
     <div class="form-horizontal">
         <h4>Reviews</h4>
         <hr />
@@ -37,6 +37,8 @@
         }
 
         @Html.Hidden("review-id", Model.reviewID)
+        @Html.Hidden("review-role", ViewData["Role"])
+        @Html.Hidden("review-status", ViewData["ReviewStatus"])
         <br/>
         <div class="row">
             <div class="col-md-4">
@@ -53,6 +55,37 @@
             </div>
         </div>
         <br />
+        @if ((string)ViewData["Role"] == "Supervisor")
+        {
+            if ((string)ViewData["ReviewStatus"] == "Open")
+            {
+                <div class="form-group">
+                    <p><i>Please discuss this review with your employee before submitting for their acknowledgment.</i></p>
+                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                    <label class="radio-inline"><input type="radio" value="sendack" name="workflow" />Submit for employee acknowledgment</label>
+                </div>
+            }
+            else if ((string)ViewData["ReviewStatus"] == "Acknowledged")
+            {
+                <div class="form-group">
+                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                    <label class="radio-inline"><input type="radio" value="reopen" name="workflow" />Re-open</label>
+                    <label class="radio-inline"><input type="radio" value="close" name="workflow" />Submit to permanent record</label>
+                </div>
+            }
+        }
+        else if ((string)ViewData["Role"] == "Employee")
+        {
+            if ((string)ViewData["ReviewStatus"] == "Ready")
+            {
+                <div class="form-group">
+                    <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
+                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                    <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
+                </div>
+            }
+
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
