@@ -10,95 +10,107 @@
     ViewData["Title"] = "Reviews Page";
     ViewData["Today"] = DateTime.Now.ToString("MMM dd, yyyy");
     List<DisplayReviewSummary> myReviews = (List<DisplayReviewSummary>)ViewData["MyReviews"];
+    string employeeDisplay = "block";
 }
 
 @if (SignInManager.IsSignedIn(User))
 {
     @if (Model.Count() > 0)
     {
-        <div class="row">
-            <div class="col-md-8">
-                <h2>Supervised Employees - Review Status</h2>
+        employeeDisplay = "none";
+        <div class="form-group">
+            <label class="radio-inline"><input type="radio" onclick="doit(0)" checked name="workflow" />My Employees</label>
+            <label class="radio-inline"><input type="radio" onclick="doit(1)" name="workflow" />My Reviews</label>
+        </div>
+        <div id="employees" class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Supervised Employees - Review Status</h2>
+                </div>
+                <div class="col-md-4">
+                    <div style="float: right"><b>@ViewData["Employee"]</b></div><br />
+                    <div style="float: right"><b>@ViewData["Today"]</b></div>
+                </div>
             </div>
-            <div class="col-md-4">
-                <div style="float: right"><b>@ViewData["Employee"]</b></div><br />
-                <div style="float: right"><b>@ViewData["Today"]</b></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Employee ID</th>
+                                <th>Last Review</th>
+                                <th>Next Due By</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">Current</a>
+                                    </td>
+                                    <td>
+                                        <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
+                                    </td>
+                                    <td>@item.EmpId</td>
+                                    <td>@item.LastReviewed</td>
+                                    <td>@item.ReviewBy</td>
+                                    <td>-</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+    }
+
+    if (Model.Count() <= 0)
+    {
+        employeeDisplay = "block";
+    }
+    <div id="reviews" style="display:@employeeDisplay" class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>My Reviews</h2>
+            </div>
+            <div class="col-md-4">
+                <div>&nbsp; </div><br />
+                <div style="float: right"><b>Supervisor: @ViewData["Supervisor"]</b></div>
+            </div>
+        </div>
+        <br />
         <div class="row">
             <div class="col-md-12">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Employee ID</th>
-                            <th>Last Review</th>
-                            <th>Next Due By</th>
-                            <th>Note</th>
+                            <th>Status</th>
+                            <th>Status Date</th>
+                            <th>Period Start</th>
+                            <th>Period End </th>
+                            <th>Link</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in myReviews)
                         {
                             <tr>
+                                <td>@item.status</td>
+                                <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.periodStart.ToString("MMM dd, yyyy")</td>
+                                <td>@item.periodEnd.ToString("MMM dd, yyyy")</td>
                                 <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">Current</a>
+                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">View</a>
                                 </td>
-                                <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
-                                </td>
-                                <td>@item.EmpId</td>
-                                <td>@item.LastReviewed</td>
-                                <td>@item.ReviewBy</td>
-                                <td>-</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
-        </div>
-    }
-
-    <br />
-
-    <div class="row">
-        <div class="col-md-8">
-            <h2>My Reviews</h2>
-        </div>
-        <div class="col-md-4">
-            <div>&nbsp; </div><br />
-            <div style="float: right"><b>Supervisor: @ViewData["Supervisor"]</b></div>
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Status Date</th>
-                        <th>Period Start</th>
-                        <th>Period End </th>
-                        <th>Link</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in myReviews)
-                    {
-                        <tr>
-                            <td>@item.status</td>
-                            <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
-                            <td>@item.periodStart.ToString("MMM dd, yyyy")</td>
-                            <td>@item.periodEnd.ToString("MMM dd, yyyy")</td>
-                            <td>
-                                <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">View</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
         </div>
     </div>
 }
@@ -112,3 +124,18 @@ else
         </div>
     </div>
 }
+
+<script>
+    function doit(which) {
+        if (which == 0) {
+            console.log("Doing it");
+            document.getElementById("reviews").style.display = 'none';
+            document.getElementById("employees").style.display = 'block';
+        }
+        else {
+            console.log("Undoing it");
+            document.getElementById("employees").style.display = 'none';
+            document.getElementById("reviews").style.display = 'block';
+        }
+    }
+</script>

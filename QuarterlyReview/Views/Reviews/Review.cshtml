@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="~/css/site.css" />
 }
 
+
+
+
 <h2>Edit</h2>
 
 <form asp-action="Review">
@@ -13,17 +16,28 @@
         <h4>Reviews</h4>
         <hr />
         <p>Review (id @Model.reviewID) of @Model.employeeName by @Model.reviewerName</p>
+
         <div class="form-group">
-            <label for="startDate" class="col-md-2 control-label">From:</label> 
+            <label for="startDate" class="col-md-2 control-label">From:</label>
             <div class="col-md-10">
-                <input type="date" name="startDate" class="form-control" value="@Model.periodStart.ToString("yyyy-MM-dd")"/>
+                <div class="input-group date" data-provide="datepicker">
+                    <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
+                    <div class="input-group-addon" glyphicon glyphicon-th>
+                    </div>
+                </div>
             </div>
             <label for="endDate" class="col-md-2 control-label">To:</label>
             <div class="col-md-10">
-                <input type="date" name="endDate" class="form-control" value="@Model.periodEnd.ToString("yyyy-MM-dd")" />
+                <div class=" input-group date" data-provide="datepicker">
+                    <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
+                    <div class="input-group-addon" glyphicon glyphicon-th>
+                    </div>
+                </div>
             </div>
+
         </div>
-        <hr/>
+
+        <hr />
         @if (Model.questions.Count() > 0)
         {
             @foreach (var item in Model.questions)
@@ -35,11 +49,17 @@
             }
             <br />
         }
+        
+        <h3>Employee Response</h3>
+        <textarea name=" response-@Model.response" rows="4" cols="200" spellcheck="true">
+            @Html.Raw((Model.response == null)? "" : Model.response)
+        </textarea>
+        <br/>
 
         @Html.Hidden("review-id", Model.reviewID)
         @Html.Hidden("review-role", ViewData["Role"])
         @Html.Hidden("review-status", ViewData["ReviewStatus"])
-        <br/>
+        <br />
         @if ((string)ViewData["Role"] == "Supervisor")
         {
             if ((string)ViewData["ReviewStatus"] == "Open")
@@ -67,6 +87,7 @@
                     <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
                     <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
                     <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
+                    <label class="radio-inline"><input type="radio" value="return" name="workflow" />Return to supervisor for revision</label>
                 </div>
             }
 
@@ -78,6 +99,7 @@
         </div>
 
     </div>
+
 </form>
 
 <div>
