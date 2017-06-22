@@ -21,7 +21,7 @@
             <label for="startDate" class="col-md-2 control-label">From:</label>
             <div class="col-md-10">
                 <div class="input-group date" data-provide="datepicker">
-                    <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("dd/mm/yyyy")" />
+                    <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
                     <div class="input-group-addon" glyphicon glyphicon-th>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
             <label for="endDate" class="col-md-2 control-label">To:</label>
             <div class="col-md-10">
                 <div class=" input-group date" data-provide="datepicker">
-                    <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("dd/mm/yyyy")" />
+                    <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
                     <div class="input-group-addon" glyphicon glyphicon-th>
                     </div>
                 </div>
