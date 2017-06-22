@@ -236,7 +236,7 @@ namespace QuarterlyReview.Controllers
                         {
                             if (rev == null)
                             {
-                                string empresp = result.IsDBNull(15) ? null : result.GetString(15);
+                                string empresp = result.IsDBNull(16) ? "" : result.GetString(16);
                                 rev = new DisplayReview(
                                     result.GetInt32(1), // R_ID
                                     result.GetString(2), // Status
@@ -300,6 +300,12 @@ namespace QuarterlyReview.Controllers
                 if (form.ContainsKey("endDate"))
                 {
                     review.PeriodEnd = Convert.ToDateTime(form["endDate"]);
+                }
+                if (form.ContainsKey("response")) {
+                    string q = String.Format("select * from dbo.Responses where R_ID = {0} AND Q_ID IS NULL", review.RId);
+                    Responses response = _context.Responses.FromSql(q).SingleOrDefault();
+                    response.Response = form["response"];
+                    response.ResponseDate = DateTime.Now;
                 }
                 if (reviewRole == "Supervisor")
                 {

@@ -4,13 +4,31 @@
     ViewData["Title"] = "Edit";
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    Boolean answersEditable = false;
+    Boolean responseEditable = false;
+    string role = (string)ViewData["Role"];
+    if (Model.status != "Closed")
+    {
+        if (role == "Supervisor")
+        {
+            if (Model.status == "Open")
+            {
+                answersEditable = true;
+            }
+        }
+        else if (role == "Employee")
+        {
+            if (Model.status == "Ready")
+            {
+                responseEditable = true;
+            }
+        }
+
+    }
 }
 
-
-
-
 <h2>Edit</h2>
-
 <form asp-action="Review">
     <div class="form-horizontal">
         <h4>Reviews</h4>
@@ -21,7 +39,7 @@
             <label for="startDate" class="col-md-2 control-label">From:</label>
             <div class="col-md-10">
                 <div class="input-group date" data-provide="datepicker">
-                    <input type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
+                    <input @(answersEditable?"":"disabled") type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
                     <div class="input-group-addon" glyphicon glyphicon-th>
                     </div>
                 </div>
@@ -29,7 +47,7 @@
             <label for="endDate" class="col-md-2 control-label">To:</label>
             <div class="col-md-10">
                 <div class=" input-group date" data-provide="datepicker">
-                    <input type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
+                    <input @(answersEditable?"":"disabled")  type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
                     <div class="input-group-addon" glyphicon glyphicon-th>
                     </div>
                 </div>
@@ -43,17 +61,33 @@
             @foreach (var item in Model.questions)
             {
                 @Html.Raw(item.question)
-                <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
-                    @Html.Raw((item.answer == null) ? "" : item.answer)
-                </textarea>
+                @if (answersEditable)
+                {
+                    <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                    </textarea>
+                }
+                else
+                {
+                    <div style="border: 1px solid; padding: 10px; background-color: lightgray;">
+                        @Html.Raw((item.answer == null) ? "" : item.answer)
+                    </div>
+                }
+                <br />
             }
-            <br />
         }
         
         <h3>Employee Response</h3>
-        <textarea name=" response-@Model.response" rows="4" cols="200" spellcheck="true">
-            @Html.Raw((Model.response == null)? "" : Model.response)
-        </textarea>
+        @if (responseEditable)
+        {
+            <textarea name="response" rows="4" cols="200" spellcheck="true">
+                @Html.Raw((Model.response == null) ? "" : Model.response)
+            </textarea>
+        }
+        else
+        {
+            <div style="border: 1px solid; padding: 10px; background-color: lightgray;">
+                @Html.Raw((Model.response == null) ? "" : Model.response)
+            </div>        }
         <br/>
 
         @Html.Hidden("review-id", Model.reviewID)
