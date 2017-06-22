@@ -50,20 +50,10 @@
             <br />
         }
         
-        @if (Model.response.Count()>0)
-        {
-
-            @foreach (var item in Model.response)
-            {
-                @Html.Raw(item.response)
-                <textarea name=" response-@item.response" rows="4" cols="200" spellcheck="true">
-                   @Html.Raw((item.response == null)? "" : item.response)
-                 </textarea>
-
-
-            }
-
-        }
+        <h3>Employee Response</h3>
+        <textarea name=" response-@Model.response" rows="4" cols="200" spellcheck="true">
+            @Html.Raw((Model.response == null)? "" : Model.response)
+        </textarea>
         <br/>
 
         @Html.Hidden("review-id", Model.reviewID)
@@ -97,6 +87,7 @@
                     <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
                     <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
                     <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
+                    <label class="radio-inline"><input type="radio" value="return" name="workflow" />Return to supervisor for revision</label>
                 </div>
             }
 

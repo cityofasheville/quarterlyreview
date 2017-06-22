@@ -292,6 +292,7 @@ namespace QuarterlyReview.Controllers
                 string reviewStatus = form["review-status"];
                 Reviews review = _context.Reviews.Find(r_id);
                 if (review == null) return NotFound();
+                _logger.LogInformation("DATEX: {start}, {end}", form["startDate"], form["endDate"]);
                 if (form.ContainsKey("startDate"))
                 {
                     review.PeriodStart = Convert.ToDateTime(form["startDate"]);
@@ -325,6 +326,10 @@ namespace QuarterlyReview.Controllers
                         if (form["workflow"] == "acknowledge")
                         {
                             review.Status = "Acknowledged";
+                        }
+                        else if (form["workflow"] == "return")
+                        {
+                            review.Status = "Open";
                         }
                     }
                 }
