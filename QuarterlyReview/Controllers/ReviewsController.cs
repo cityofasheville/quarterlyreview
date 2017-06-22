@@ -29,27 +29,44 @@ namespace QuarterlyReview.Controllers
 
         private Boolean viewAllowed (string userID, string targetID)
         {
+            Boolean isAllowed = false;
             var mayViewCmd = _context.Database.GetDbConnection().CreateCommand();
             // Call the avp_New_Review stored procedure and get the resulting ID
-            mayViewCmd.CommandText = "DECLARE	@May_View nchar(1) " +
-                "EXEC [dbo].[avp_May_View_Emp] " +
-                String.Format("@UserEmpID = {0}, @EmpID = {1},", userID, targetID) +
-                "@May_View = @May_View OUTPUT " +
-                "SELECT  @May_View as N'@May_View'";
-
+            mayViewCmd.CommandText = "SELECT TOP(1) * FROM dbo.SuperUsers WHERE EmpID = " + userID;
             _context.Database.OpenConnection();
-            Char retVal = 'N';
             using (var result = mayViewCmd.ExecuteReader())
             {
                 if (result.HasRows)
                 {
                     if (result.Read())
                     {
-                        retVal = result.GetString(0)[0];
+                        if (result.GetInt32(1) == 1) isAllowed = true;
                     }
                 }
             }
-            return (retVal == 'Y') ? true : false;
+            if (!isAllowed)
+            {
+                mayViewCmd.CommandText = "DECLARE	@May_View nchar(1) " +
+                    "EXEC [dbo].[avp_May_View_Emp] " +
+                    String.Format("@UserEmpID = {0}, @EmpID = {1},", userID, targetID) +
+                    "@May_View = @May_View OUTPUT " +
+                    "SELECT  @May_View as N'@May_View'";
+
+                Char retVal = 'N';
+                using (var result = mayViewCmd.ExecuteReader())
+                {
+                    if (result.HasRows)
+                    {
+                        if (result.Read())
+                        {
+                            retVal = result.GetString(0)[0];
+                        }
+                    }
+                }
+                isAllowed = (retVal == 'Y') ? true : false;
+            }
+
+            return isAllowed;
         }
 
         private string GetRole(int userID, Employees employee)
