@@ -14,6 +14,7 @@ namespace QuarterlyReview.Models
         public string status { get; set; }
         public DateTime statusDate { get; set; }
         public int supervisorID { get; set; }
+        public string supervisorName { get; set; }
         public int employeeID { get; set; }
         public string employeeName { get; set; }
         public string divisionID { get; set; }
@@ -22,7 +23,7 @@ namespace QuarterlyReview.Models
         public DateTime periodEnd { get; set; }
 
         public DisplayReviewSummary(int rt_id, int r_id, string rt_name, string rt_desc, string stat,
-            DateTime stat_date, int sid, int e_id, string e_name, string div_id, string pos,
+            DateTime stat_date, int sid, string s_name, int e_id, string e_name, string div_id, string pos,
             DateTime start, DateTime end)
         {
             reviewTemplateID = rt_id;
@@ -32,6 +33,7 @@ namespace QuarterlyReview.Models
             status = stat;
             statusDate = stat_date;
             supervisorID = sid;
+            supervisorName = s_name;
             employeeID = e_id;
             employeeName = e_name;
             divisionID = div_id;

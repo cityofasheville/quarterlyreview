@@ -27,38 +27,30 @@
                 <div class="col-md-8">
                     <h2>Supervised Employees - Review Status</h2>
                 </div>
-                <div class="col-md-4">
-                    <div style="float: right"><b>@ViewData["Employee"]</b></div><br />
-                    <div style="float: right"><b>@ViewData["Today"]</b></div>
-                </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th></th>
                                 <th>Name</th>
-                                <th>Employee ID</th>
-                                <th>Last Review</th>
-                                <th>Next Due By</th>
-                                <th>Note</th>
+                                <th>Current Due By</th>
+                                <th>Last Review Completed</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
+                                string lastRev = item.LastReviewed == null ? "" : ((DateTime)item.LastReviewed).ToString("M/dd/yyyy");
+                                string due = item.ReviewBy == null ? "x" : ((DateTime)item.ReviewBy).ToString("M/dd/yyyy");
                                 <tr>
-                                    <td>
-                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">Current</a>
-                                    </td>
                                     <td>
                                         <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
                                     </td>
-                                    <td>@item.EmpId</td>
-                                    <td>@item.LastReviewed</td>
-                                    <td>@item.ReviewBy</td>
-                                    <td>-</td>
+                                    <td>
+                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">@due</a>
+                                    </td>
+                                    <td>@lastRev</td>
                                 </tr>
                             }
                         </tbody>
@@ -75,39 +67,85 @@
     <div id="reviews" style="display:@employeeDisplay" class="container">
         <div class="row">
             <div class="col-md-8">
-                <h2>My Reviews</h2>
+                <h2>Reviews of @ViewData["Employee"]</h2>
             </div>
             <div class="col-md-4">
                 <div>&nbsp; </div><br />
-                <div style="float: right"><b>Supervisor: @ViewData["Supervisor"]</b></div>
+                <div style="float: right"><b>Current Supervisor: @ViewData["Supervisor"]</b></div>
             </div>
         </div>
         <br />
         <div class="row">
+            <h3>Current Review</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Status</th>
+                        <th>Last Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in myReviews)
+                    {
+                        if (item.status != "Closed")
+                        {
+                            string reviewPeriod = String.Format("{0} - {1}",
+                                item.periodStart.ToString("MM/dd/yyyy"),
+                                item.periodEnd.ToString("MM/dd/yyyy"));
+                            string statusMsg = "waiting on supervisor.";
+                            switch (item.status)
+                            {
+                                case "Ready":
+                                    statusMsg = "ready for employee review.";
+                                    break;
+                                case "Acknowledged":
+                                    statusMsg = "waiting on supervisor";
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            <tr>
+                                <td>
+                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
+                                </td>
+                                <td>@item.status: @statusMsg</td>
+                                <td>@item.statusDate.ToString("MM/dd/yyyy")</td>
+                            </tr>
+                                                }
+                                }
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <h3>Past Reviews</h3>
             <div class="col-md-12">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Status</th>
-                            <th>Status Date</th>
-                            <th>Period Start</th>
-                            <th>Period End </th>
-                            <th>Link</th>
+                            <th>Review Period</th>
+                            <th>Date Completed</th>
+                            <th>Reviewer</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in myReviews)
-                        {
-                            <tr>
-                                <td>@item.status</td>
-                                <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
-                                <td>@item.periodStart.ToString("MMM dd, yyyy")</td>
-                                <td>@item.periodEnd.ToString("MMM dd, yyyy")</td>
-                                <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">View</a>
-                                </td>
-                            </tr>
-                        }
+                            {
+                                if (item.status == "Closed")
+                                {
+                                    string reviewPeriod = String.Format("{0} - {1}",
+                                        item.periodStart.ToString("MM/dd/yyyy"),
+                                        item.periodEnd.ToString("MM/dd/yyyy"));
+                                <tr>
+                                    <td>
+                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
+                                    </td>
+                                    <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@item.supervisorName</td>
+                                </tr>
+                                }
+                            }
                     </tbody>
                 </table>
             </div>
@@ -127,15 +165,15 @@ else
 
 <script>
     function doit(which) {
-        if (which == 0) {
-            console.log("Doing it");
-            document.getElementById("reviews").style.display = 'none';
-            document.getElementById("employees").style.display = 'block';
-        }
-        else {
-            console.log("Undoing it");
-            document.getElementById("employees").style.display = 'none';
-            document.getElementById("reviews").style.display = 'block';
-        }
-    }
+                        if (which == 0) {
+                            console.log("Doing it");
+                            document.getElementById("reviews").style.display = 'none';
+                            document.getElementById("employees").style.display = 'block';
+                        }
+                        else {
+                            console.log("Undoing it");
+                            document.getElementById("employees").style.display = 'none';
+                            document.getElementById("reviews").style.display = 'block';
+                        }
+                    }
 </script>

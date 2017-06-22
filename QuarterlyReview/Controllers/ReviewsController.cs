@@ -129,12 +129,13 @@ namespace QuarterlyReview.Controllers
                                 result.GetString(4), // Status
                                 result.GetDateTime(5), // Status_Date
                                 result.GetInt32(6), // SupID
-                                result.GetInt32(7), // EmpID
-                                result.GetString(8), // Employee
-                                result.GetString(9), // DivID
-                                result.GetString(10), // Position
-                                result.GetDateTime(11), // PeriodStart
-                                result.GetDateTime(12) // PeriodEnd
+                                result.GetString(7), // Reviewer
+                                result.GetInt32(8), // EmpID
+                                result.GetString(9), // Employee
+                                result.GetString(10), // DivID
+                                result.GetString(11), // Position
+                                result.GetDateTime(12), // PeriodStart
+                                result.GetDateTime(13) // PeriodEnd
                              );
                             myReviews.Add(rev);
                         }
