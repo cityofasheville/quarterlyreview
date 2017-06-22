@@ -236,6 +236,7 @@ namespace QuarterlyReview.Controllers
                         {
                             if (rev == null)
                             {
+                                string empresp = result.IsDBNull(15) ? null : result.GetString(15);
                                 rev = new DisplayReview(
                                     result.GetInt32(1), // R_ID
                                     result.GetString(2), // Status
@@ -245,7 +246,11 @@ namespace QuarterlyReview.Controllers
                                     result.GetDateTime(8), // PeriodStart
                                     result.GetDateTime(9), // PeriodEnd
                                     result.GetString(19), // Reviewer
-                                    result.GetString(22) // Employee
+                                    result.GetString(22), // Employee
+                                    empresp,
+                                  //  result.GetString(100), //Response
+                                    result.GetDateTime(9) //ResonseDate
+                                    
                                     );
                             }
                             string qtext = result.IsDBNull(13) ? null : result.GetString(13);
@@ -257,6 +262,8 @@ namespace QuarterlyReview.Controllers
                                 atext // Answer
                                 );
                             rev.questions.Add(q);
+
+                            
                         }
                     }
                 }

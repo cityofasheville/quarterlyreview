@@ -16,13 +16,14 @@ namespace QuarterlyReview.Models
         public DateTime periodEnd { get; set; }
         public string reviewerName { get; set; }
         public string employeeName { get; set; }
-        string response { get; set; }
-
+        public string response { get; set; }
+        public DateTime responsedate { get; set; }
+        
         public List<DisplayQuestion> questions { get; set; }
 
 
         public DisplayReview(int id, string stat, int sid, int eid, string pos,
-            DateTime start, DateTime end, string revName, string empName)
+            DateTime start, DateTime end, string revName, string empName, string empresp, DateTime respdate)
         {
             reviewID = id;
             status = stat;
@@ -33,6 +34,10 @@ namespace QuarterlyReview.Models
             periodEnd = end;
             reviewerName = revName;
             employeeName = empName;
+            response = empresp;
+            responsedate = respdate;
+
+            
             questions = new List<DisplayQuestion>();
         }
     }

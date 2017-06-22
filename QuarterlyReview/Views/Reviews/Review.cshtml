@@ -49,6 +49,22 @@
             }
             <br />
         }
+        
+        @if (Model.response.Count()>0)
+        {
+
+            @foreach (var item in Model.response)
+            {
+                @Html.Raw(item.response)
+                <textarea name=" response-@item.response" rows="4" cols="200" spellcheck="true">
+                   @Html.Raw((item.response == null)? "" : item.response)
+                 </textarea>
+
+
+            }
+
+        }
+        <br/>
 
         @Html.Hidden("review-id", Model.reviewID)
         @Html.Hidden("review-role", ViewData["Role"])
