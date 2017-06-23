@@ -2,9 +2,6 @@
 
 @{
     ViewData["Title"] = "Edit";
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-
     Boolean answersEditable = false;
     Boolean responseEditable = false;
     string role = (string)ViewData["Role"];
@@ -27,116 +24,182 @@
 
     }
 }
-
 <h2>Review of @Model.employeeName by @Model.reviewerName</h2>
 <form asp-action="Review">
-    <div class="form-horizontal">
-
-
-        <div class="form-group">
-            <label for="startDate" class="col-md-2 control-label">From:</label>
-            <div class="col-md-10">
-                <div class="input-group date" data-provide="datepicker">
-                    <input @(answersEditable?"":"disabled") type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
-                    <div class="input-group-addon" glyphicon glyphicon-th>
+    <div class="row form-horizontal">
+        <div class="col-sm-12">
+            <fieldset class="reviewQuestionFieldset">
+                <legend>Review period</legend>
+                <div class="form-group">
+                    <label for="startDate" class="col-xs-2 control-label">From:</label>
+                    <div class="col-xs-4">
+                        <div class="input-group date" data-provide="datepicker">
+                            <input @(answersEditable?"":"disabled") type="text" name="startDate" class="form-control" value="@Model.periodStart.ToString("MM-dd-yyyy")" />
+                            <div class="input-group-addon" style=@(answersEditable?"":"display:none;")>
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="endDate" class="col-xs-2 control-label">To:</label>
+                    <div class="col-xs-4">
+                        <div class=" input-group date" data-provide="datepicker">
+                            <input @(answersEditable?"":"disabled")  type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
+                            <div class="input-group-addon" style=@(answersEditable?"":"display:none;")>
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <label for="endDate" class="col-md-2 control-label">To:</label>
-            <div class="col-md-10">
-                <div class=" input-group date" data-provide="datepicker">
-                    <input @(answersEditable?"":"disabled")  type="text" name="endDate" class="form-control" value="@Model.periodEnd.ToString("MM-dd-yyyy")" />
-                    <div class="input-group-addon" glyphicon glyphicon-th>
-                    </div>
-                </div>
-            </div>
+            </fieldset>
 
-        </div>
-
-        <hr />
-        @if (Model.questions.Count() > 0)
-        {
-            @foreach (var item in Model.questions)
+            @if (Model.questions.Count() > 0)
             {
-                @Html.Raw(item.question)
-                @if (answersEditable)
+                @foreach (var item in Model.questions)
                 {
-                    <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                    <fieldset class="reviewQuestionFieldset">
+                        @Html.Raw(item.question)
+                        @if (answersEditable)
+                        {
+                            <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                            </textarea>
+                        }
+                        else
+                        {
+                            <div style="border: 1px solid #ccc; padding: 10px; background-color: #eee;">
+                                @Html.Raw((item.answer == null) ? "" : item.answer)
+                            </div>
+                        }
+                    </fieldset>
+                }
+            }
+        
+            <fieldset class="reviewQuestionFieldset">
+                <legend>Employee Response</legend>
+                @if (responseEditable)
+                {
+                    <textarea name="response" rows="4" cols="200" spellcheck="true">
+                        @Html.Raw((Model.response == null) ? "" : Model.response)
                     </textarea>
                 }
                 else
                 {
-                    <div style="border: 1px solid; padding: 10px; background-color: lightgray;">
-                        @Html.Raw((item.answer == null) ? "" : item.answer)
-                    </div>
-                }
-                <br />
-            }
-        }
-        
-        <h3>Employee Response</h3>
-        @if (responseEditable)
-        {
-            <textarea name="response" rows="4" cols="200" spellcheck="true">
-                @Html.Raw((Model.response == null) ? "" : Model.response)
-            </textarea>
-        }
-        else
-        {
-            <div style="border: 1px solid; padding: 10px; background-color: lightgray;">
-                @Html.Raw((Model.response == null) ? "" : Model.response)
-            </div>        }
-        <br/>
+                    <div style="border: 1px solid #ccc; padding: 10px; background-color: #eee;">
+                        @Html.Raw((Model.response == null) ? "" : Model.response)
+                    </div>        }
+            </fieldset>
 
-        @Html.Hidden("review-id", Model.reviewID)
-        @Html.Hidden("review-role", ViewData["Role"])
-        @Html.Hidden("review-status", ViewData["ReviewStatus"])
-        <br />
-        @if ((string)ViewData["Role"] == "Supervisor")
-        {
-            if ((string)ViewData["ReviewStatus"] == "Open")
-            {
-                <div class="form-group">
-                    <p><i>Please discuss this review with your employee before submitting for their acknowledgment.</i></p>
-                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
-                    <label class="radio-inline"><input type="radio" value="sendack" name="workflow" />Submit for employee acknowledgment</label>
-                </div>
-            }
-            else if ((string)ViewData["ReviewStatus"] == "Acknowledged")
-            {
-                <div class="form-group">
-                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
-                    <label class="radio-inline"><input type="radio" value="reopen" name="workflow" />Re-open</label>
-                    <label class="radio-inline"><input type="radio" value="close" name="workflow" />Submit to permanent record</label>
-                </div>
-            }
-        }
-        else if ((string)ViewData["Role"] == "Employee")
-        {
-            if ((string)ViewData["ReviewStatus"] == "Ready")
-            {
-                <div class="form-group">
-                    <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
-                    <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
-                    <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
-                    <label class="radio-inline"><input type="radio" value="return" name="workflow" />Return to supervisor for revision</label>
-                </div>
-            }
+            @Html.Hidden("review-id", Model.reviewID)
+            @Html.Hidden("review-role", ViewData["Role"])
+            @Html.Hidden("review-status", ViewData["ReviewStatus"])
 
-        }
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+            @if ((string)ViewData["ReviewStatus"] != "Closed")
+            {
+                <fieldset class="reviewQuestionFieldset">
+                    <legend>Action</legend>
+                    @if ((string)ViewData["Role"] == "Supervisor")
+                    {
+                        if ((string)ViewData["ReviewStatus"] == "Open")
+                        {
+                            <p><i>Please discuss this review with your employee before submitting for their acknowledgment.</i></p>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                                        <label class="radio-inline"><input type="radio" value="sendack" name="workflow" />Submit for employee acknowledgment</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if ((string)ViewData["ReviewStatus"] == "Acknowledged")
+                        {
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                                        <label class="radio-inline"><input type="radio" value="reopen" name="workflow" />Re-open</label>
+                                        <label class="radio-inline"><input type="radio" value="close" name="workflow" />Submit to permanent record</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </div>
+                        } else if ((string)ViewData["ReviewStatus"] == "Ready")
+                        {
+                            <div class="alert alert-info">
+                                You must wait for your employee to respond before further actions can be taken.
+                            </div>
+
+                        }
+                    }
+                    else if ((string)ViewData["Role"] == "Employee")
+                    {
+                        if ((string)ViewData["ReviewStatus"] == "Ready")
+                        {
+                            <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
+                                        <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
+                                        <label class="radio-inline"><input type="radio" value="return" name="workflow" />Return to supervisor for revision</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </div>
+                        } else if ((string)ViewData["ReviewStatus"] == "Open")
+                        {
+                            <div class="alert alert-info">
+                                Your supervisor has not yet released the review for your response.
+                            </div>
+                        } else if ((string)ViewData["ReviewStatus"] == "Closed")
+                        {
+                            <div class="alert alert-info">
+                                This review has been closed.
+                            </div>
+
+                        }
+                    }
+                </fieldset>
+            }
         </div>
 
-    </div>
+        </div>
+
 
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@if (role == "Supervisor")
+{
+    <div>
+        <a asp-action="Index" asp-route-emp="@Model.employeeID">Back to @Model.employeeName&apos;s Reviews</a>
+    </div>
+    <div>
+        <a asp-action="Index">Back to all Employee Reviews</a>
+    </div>
+} else
+{
+    <div>
+        <a asp-action="Index">Back to My Reviews</a>
+    </div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

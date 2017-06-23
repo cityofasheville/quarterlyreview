@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * Datepicker for Bootstrap v1.7.0 (https://github.com/uxsolutions/bootstrap-datepicker)
  *
  * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)
@@ -656,8 +656,16 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
   padding: 0 2px 0 5px;
   vertical-align: middle;
 }
+.input-group.date {
+  width: 150px;
+}
+.input-group.date .form-control[disabled] {
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
 .input-group.date .input-group-addon {
   cursor: pointer;
+  width: 10px;
 }
 .input-daterange {
   width: 100%;

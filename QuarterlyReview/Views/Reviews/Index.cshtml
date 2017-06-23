@@ -18,24 +18,28 @@
     @if (Model.Count() > 0)
     {
         employeeDisplay = "none";
-        <div class="form-group">
-            <label class="radio-inline"><input type="radio" onclick="doit(0)" checked name="workflow" />My Employees</label>
-            <label class="radio-inline"><input type="radio" onclick="doit(1)" name="workflow" />My Reviews</label>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="btn-group" style="margin-top: 15px">
+                    <label class="radio-inline"><input type="radio" onclick="doit(0)" checked name="workflow" />My Employees</label>
+                    <label class="radio-inline"><input type="radio" onclick="doit(1)" name="workflow" />My Reviews</label>
+                </div>
+            </div>
         </div>
-        <div id="employees" class="container">
+        <div id="employees">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-sm-12">
                     <h2>Supervised Employees - Review Status</h2>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-sm-12">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Current Due By</th>
-                                <th>Last Review Completed</th>
+                                <th width="25%">Current Due By</th>
+                                <th width="25%">Last Review Completed</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,7 +53,17 @@
                                     </td>
                                     <td>
                                         @if (item.Position != null) {
-                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">@due</a>
+                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId"
+                                                style=@(((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 0 ? "color: red" :
+                                                    ((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 7 ? "color: orange" : "color: #337ab7")>
+                                                @due
+                                            @if (((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 0) {
+                                                <span class="glyphicon glyphicon-exclamation-sign" title="Review Overdue!"></span>
+                                            } else if (((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 7) {
+                                                <span class="glyphicon glyphicon-hourglass" title="Review due in less than a week!"></span>
+
+                                            }
+                                            </a>
                                         }
                                         else
                                         {
@@ -73,94 +87,111 @@
     {
         employeeDisplay = "block";
     }
-    <div id="reviews" style="display:@employeeDisplay" class="container">
+    <div id="reviews" style="display:@employeeDisplay">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-sm-12">
                 <h2>Reviews of @employee.Employee</h2>
-            </div>
-            <div class="col-md-4">
-                <div>&nbsp; </div><br />
-                <div style="float: right"><b>Current Supervisor: @ViewData["Supervisor"]</b></div>
+                <div class="pull-right"><b>Current Supervisor: @ViewData["Supervisor"]</b></div>
             </div>
         </div>
-        <br />
 
         @if (employee.Position != null)
         {
             <div class="row">
-                <h3>Current Review</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Period</th>
-                            <th>Status</th>
-                            <th>Last Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in myReviews)
-                        {
-                            if (item.status != "Closed")
-                            {
-                                string reviewPeriod = String.Format("{0} - {1}",
-                                    item.periodStart.ToString("MM/dd/yyyy"),
-                                    item.periodEnd.ToString("MM/dd/yyyy"));
-                                string statusMsg = "waiting on supervisor.";
-                                switch (item.status)
-                                {
-                                    case "Ready":
-                                        statusMsg = "ready for employee review.";
-                                        break;
-                                    case "Acknowledged":
-                                        statusMsg = "waiting on supervisor";
-                                        break;
-                                    default:
-                                        break;
-                                }
-
+                <div class="col-sm-12">
+                    <h3>Current Review</h3>
+                    @if (myReviews.Where(o => o.status != "Closed").Count() == 0)
+                    {
+                        <div class="alert alert-warning">
+                            No current reviews found.
+                        </div>
+                    } else
+                    {
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
-                                    </td>
-                                    <td>@item.status: @statusMsg</td>
-                                    <td>@item.statusDate.ToString("MM/dd/yyyy")</td>
+                                    <th width="35%">Period</th>
+                                    <th>Status</th>
+                                    <th width="20%">Last Change</th>
                                 </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in myReviews)
+                                {
+                                    if (item.status != "Closed")
+                                    {
+                                        string reviewPeriod = String.Format("{0} - {1}",
+                                            item.periodStart.ToString("MM/dd/yyyy"),
+                                            item.periodEnd.ToString("MM/dd/yyyy"));
+                                        string statusMsg = "waiting on supervisor.";
+                                        switch (item.status)
+                                        {
+                                            case "Ready":
+                                                statusMsg = "ready for employee review.";
+                                                break;
+                                            case "Acknowledged":
+                                                statusMsg = "waiting on supervisor";
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                        <tr>
+                                            <td>
+                                                <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
+                                            </td>
+                                            <td>@item.status: @statusMsg</td>
+                                            <td>@item.statusDate.ToString("MM/dd/yyyy")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+
+                    }
+                </div>
             </div>
         }
         <div class="row">
-            <h3>Past Reviews</h3>
-            <div class="col-md-12">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Review Period</th>
-                            <th>Date Completed</th>
-                            <th>Reviewer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in myReviews)
+            <div class="col-sm-12">
+                <h3>Past Reviews</h3>
+                @if (myReviews.Where(o => o.status == "Closed").Count() == 0)
+                {
+                    <div class="alert alert-warning">
+                        No past reviews found.
+                    </div>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="35%">Review Period</th>
+                                <th width="20%">Date Completed</th>
+                                <th>Reviewer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in myReviews)
                             {
                                 if (item.status == "Closed")
                                 {
                                     string reviewPeriod = String.Format("{0} - {1}",
                                         item.periodStart.ToString("MM/dd/yyyy"),
                                         item.periodEnd.ToString("MM/dd/yyyy"));
-                                <tr>
-                                    <td>
-                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
-                                    </td>
-                                    <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
-                                    <td>@item.supervisorName</td>
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
+                                        </td>
+                                        <td>@item.statusDate.ToString("MMM dd, yyyy")</td>
+                                        <td>@item.supervisorName</td>
+                                    </tr>
                                 }
                             }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                }
             </div>
         </div>
     </div>
