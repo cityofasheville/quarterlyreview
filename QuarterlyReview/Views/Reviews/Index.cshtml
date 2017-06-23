@@ -42,13 +42,19 @@
                             @foreach (var item in Model)
                             {
                                 string lastRev = item.LastReviewed == null ? "" : ((DateTime)item.LastReviewed).ToString("M/dd/yyyy");
-                                string due = item.ReviewBy == null ? "x" : ((DateTime)item.ReviewBy).ToString("M/dd/yyyy");
+                                string due = item.ReviewBy == null ? "Eric LaRue, where is it?" : ((DateTime)item.ReviewBy).ToString("M/dd/yyyy");
                                 <tr>
                                     <td>
                                         <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
                                     </td>
                                     <td>
-                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">@due</a>
+                                        @if (item.Position != null) {
+                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId">@due</a>
+                                        }
+                                        else
+                                        {
+                                                <span> N/A </span>
+                                        }
                                     </td>
                                     <td>@lastRev</td>
                                 </tr>
@@ -60,6 +66,9 @@
         </div>
     }
 
+    Employees employee = (Employees)ViewData["Employee"];
+    Boolean hasActivePosition = (employee.Position != null);
+
     if (Model.Count() <= 0)
     {
         employeeDisplay = "block";
@@ -67,7 +76,7 @@
     <div id="reviews" style="display:@employeeDisplay" class="container">
         <div class="row">
             <div class="col-md-8">
-                <h2>Reviews of @ViewData["Employee"]</h2>
+                <h2>Reviews of @employee.Employee</h2>
             </div>
             <div class="col-md-4">
                 <div>&nbsp; </div><br />
@@ -75,49 +84,53 @@
             </div>
         </div>
         <br />
-        <div class="row">
-            <h3>Current Review</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Period</th>
-                        <th>Status</th>
-                        <th>Last Change</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in myReviews)
-                    {
-                        if (item.status != "Closed")
-                        {
-                            string reviewPeriod = String.Format("{0} - {1}",
-                                item.periodStart.ToString("MM/dd/yyyy"),
-                                item.periodEnd.ToString("MM/dd/yyyy"));
-                            string statusMsg = "waiting on supervisor.";
-                            switch (item.status)
-                            {
-                                case "Ready":
-                                    statusMsg = "ready for employee review.";
-                                    break;
-                                case "Acknowledged":
-                                    statusMsg = "waiting on supervisor";
-                                    break;
-                                default:
-                                    break;
-                            }
 
-                            <tr>
-                                <td>
-                                    <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
-                                </td>
-                                <td>@item.status: @statusMsg</td>
-                                <td>@item.statusDate.ToString("MM/dd/yyyy")</td>
-                            </tr>
-                                                }
+        @if (employee.Position != null)
+        {
+            <div class="row">
+                <h3>Current Review</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Last Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in myReviews)
+                        {
+                            if (item.status != "Closed")
+                            {
+                                string reviewPeriod = String.Format("{0} - {1}",
+                                    item.periodStart.ToString("MM/dd/yyyy"),
+                                    item.periodEnd.ToString("MM/dd/yyyy"));
+                                string statusMsg = "waiting on supervisor.";
+                                switch (item.status)
+                                {
+                                    case "Ready":
+                                        statusMsg = "ready for employee review.";
+                                        break;
+                                    case "Acknowledged":
+                                        statusMsg = "waiting on supervisor";
+                                        break;
+                                    default:
+                                        break;
                                 }
-                </tbody>
-            </table>
-        </div>
+
+                                <tr>
+                                    <td>
+                                        <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-id="@item.reviewID" asp-route-emp="@item.employeeID">@reviewPeriod</a>
+                                    </td>
+                                    <td>@item.status: @statusMsg</td>
+                                    <td>@item.statusDate.ToString("MM/dd/yyyy")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
         <div class="row">
             <h3>Past Reviews</h3>
             <div class="col-md-12">

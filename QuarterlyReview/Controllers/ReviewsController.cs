@@ -167,11 +167,12 @@ namespace QuarterlyReview.Controllers
 
             // Done
             ViewData["Role"] = role;
+            ViewData["User"] = user;
             ViewData["EmployeeID"] = user.EmployeeID;
             ViewData["EmployeeID"] = user.EmployeeID;
             ViewData["Supervisor"] = employee.Supervisor;
             ViewData["Employees"] = myEmployees;
-            ViewData["Employee"] = employee.Employee;
+            ViewData["Employee"] = employee;
             ViewData["MyReviews"] = myReviews;
             return View(myEmployees);
         }
