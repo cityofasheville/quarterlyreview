@@ -141,7 +141,7 @@ namespace QuarterlyReview.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(ReviewsController.Index), "Reviews");
         }
 
         //
@@ -469,7 +469,7 @@ namespace QuarterlyReview.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(ReviewsController.Index), "Reviews");
             }
         }
 
