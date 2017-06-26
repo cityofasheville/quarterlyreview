@@ -178,7 +178,7 @@ namespace QuarterlyReview.Controllers
         }
 
         // GET: Reviews/Review/5?emp=NNNN
-        public async Task<IActionResult> Review(int? id, string emp)
+        public async Task<IActionResult> Review(int? id, string emp, char? printable)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -190,6 +190,7 @@ namespace QuarterlyReview.Controllers
             }
 
             int reviewID = (id == null) ? -1 : (int)id;
+            Boolean isPrintable = (printable == null) ? false : true;
 
             // emp is the employee whose review it is - it is a required parameter
             if (emp == null) return NotFound();
@@ -299,6 +300,7 @@ namespace QuarterlyReview.Controllers
 
             ViewData["Role"] = role;
             ViewData["ReviewStatus"] = rev.status;
+            ViewData["printable"] = isPrintable;
             return View(rev);
         }
 
