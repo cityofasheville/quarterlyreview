@@ -61,6 +61,7 @@
                         @if (answersEditable)
                         {
                             <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                                @Html.Raw((item.answer == null) ? "" : item.answer)
                             </textarea>
                         }
                         else
