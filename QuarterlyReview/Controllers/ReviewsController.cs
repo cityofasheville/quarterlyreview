@@ -266,7 +266,7 @@ namespace QuarterlyReview.Controllers
                     {
                         if (rev == null)
                         {
-                            string empresp = result.IsDBNull(16) ? "" : result.GetString(16);
+                            string empresp = result.IsDBNull(17) ? "" : result.GetString(17);
                             rev = new DisplayReview(
                                 result.GetInt32(1), // R_ID
                                 result.GetString(2), // Status
@@ -275,8 +275,8 @@ namespace QuarterlyReview.Controllers
                                 result.GetString(7), // Position
                                 result.GetDateTime(8), // PeriodStart
                                 result.GetDateTime(9), // PeriodEnd
-                                result.GetString(19), // Reviewer
-                                result.GetString(22), // Employee
+                                result.GetString(20), // Reviewer
+                                result.GetString(23), // Employee
                                 empresp,
                                 //  result.GetString(100), //Response
                                 result.GetDateTime(9) //ResonseDate
@@ -289,7 +289,8 @@ namespace QuarterlyReview.Controllers
                             result.GetInt32(14), // Q_ID
                             result.GetString(12), // QT_Type
                             qtext, // QT_Question
-                            atext // Answer
+                            atext, // Answer
+                            result.GetBoolean(16) // Required flag
                             );
                         rev.questions.Add(q);
 
@@ -319,6 +320,7 @@ namespace QuarterlyReview.Controllers
                 string reviewRole = form["review-role"];
                 string reviewStatus = form["review-status"];
                 Reviews review = _context.Reviews.Find(r_id);
+                Reviews rr = _context.Reviews.Include(r => r.Questions).SingleOrDefault(r => r.RId == r_id);
                 if (review == null) return NotFound();
 
                 if (form.ContainsKey("startDate"))
@@ -364,6 +366,29 @@ namespace QuarterlyReview.Controllers
                         else if (form["workflow"] == "return")
                         {
                             review.Status = "Open";
+                        }
+                    }
+                }
+                /*
+                 * We have to loop through to find Y/N questions since there may not be a key
+                 * for them (if both answers are unchecked).
+                 */
+                _logger.LogInformation("Total questions = " + review.Questions.Count());
+                 foreach (Questions qst in review.Questions) {
+                    _logger.LogInformation("XDeal with question " + qst.QId);
+                    if (qst.QtType == "Y/N")
+                    {
+                        string key = "ynanswer-" + qst.QId;
+                        _logger.LogInformation("We have a Y/N question with id = " + qst.QId + ", key = " + key);
+                        //Questions question = _context.Questions.Find(qst.QId);
+
+                        if (form.ContainsKey(key)) {
+                            string value = form[key];
+                            qst.Answer = (value == "Y") ? "1" : "0";
+                        }
+                        else
+                        {
+                            qst.Answer = null;
                         }
                     }
                 }

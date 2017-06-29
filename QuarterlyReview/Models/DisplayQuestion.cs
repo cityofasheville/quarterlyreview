@@ -11,13 +11,15 @@ namespace QuarterlyReview.Models
         public string qType { get; set; }
         public string question { get; set; }
         public string answer { get; set; }
+        public Boolean required { get; set; }
 
-        public DisplayQuestion (int id, string type, string qtext, string atext)
+        public DisplayQuestion (int id, string type, string qtext, string atext, Boolean req)
         {
             qID = id;
             qType = type;
             question = qtext;
             answer = atext;
+            required = req;
         }
     }
 }

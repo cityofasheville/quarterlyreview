@@ -69,16 +69,32 @@
                 {
                     <fieldset class="reviewQuestionFieldset">
                         @Html.Raw(item.question)
-                        @if (answersEditable)
+                        @if (item.qType == "Text")
                         {
-                            <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
-                                @Html.Raw((item.answer == null) ? "" : item.answer)
-                            </textarea>
+                            @if (answersEditable)
+                            {
+                                <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                                    @Html.Raw((item.answer == null) ? "" : item.answer)
+                                </textarea>
+                            }
+                            else
+                            {
+                                <div style="border: 1px solid #ccc; padding: 10px; background-color: #eee;">
+                                    @Html.Raw((item.answer == null) ? "" : item.answer)
+                                </div>
+                            }
                         }
-                        else
+                        else if (item.qType == "Y/N")
                         {
-                            <div style="border: 1px solid #ccc; padding: 10px; background-color: #eee;">
-                                @Html.Raw((item.answer == null) ? "" : item.answer)
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="btn-group">
+                                        <label class="radio-inline"><input id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
+                                        <label class="radio-inline"><input id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
+                                        <span>&nbsp;&nbsp;</span>
+                                        <a style="position:relative; top:5px;"onclick="doit(@item.qID)">Clear</a>
+                                    </div>
+                                </div>
                             </div>
                         }
                     </fieldset>
@@ -86,7 +102,7 @@
             }
         
             <fieldset class="reviewQuestionFieldset">
-                <legend>Employee Response</legend>
+                <legend>Employee Comments</legend>
                 @if (responseEditable)
                 {
                     <textarea name="response" rows="4" cols="200" spellcheck="true">
@@ -165,7 +181,7 @@
                                     <div class="btn-group">
                                         <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
                                         <label class="radio-inline"><input type="radio" value="acknowledge" name="workflow" />Acknowledge</label>
-                                        <label class="radio-inline"><input type="radio" value="return" name="workflow" />Return to supervisor for revision</label>
+                                        <label class="radio-inline"><input type="radio" value="return" name="workflow" />Further discussion requested</label>
                                     </div>
                                 </div>
                             </div>
@@ -216,3 +232,10 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+    function doit(id) {
+        document.getElementById("Y-" + id).checked = false;
+        document.getElementById("N-" + id).checked = false;
+    }
+</script>
