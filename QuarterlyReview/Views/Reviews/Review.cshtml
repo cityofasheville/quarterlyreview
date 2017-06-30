@@ -105,8 +105,21 @@
                                                 rclass = "question qreq";
                                             }
                                         }
-                                        <label class="radio-inline"><input class="@rclass" id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
-                                        <label class="radio-inline"><input class="@rclass" id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
+                                        @if (item.answer == "1")
+                                        {
+                                            <label class="radio-inline"><input class="@rclass" id="Y-@item.qID" type="radio" checked value="Y" name="ynanswer-@item.qID" />Yes</label>
+                                            <label class="radio-inline"><input class="@rclass" id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
+                                        }
+                                        else if (item.answer == "0")
+                                        {
+                                            <label class="radio-inline"><input class="@rclass" id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
+                                            <label class="radio-inline"><input class="@rclass" id="N-@item.qID" type="radio" checked value="N" name="ynanswer-@item.qID" />No</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="radio-inline"><input class="@rclass" id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
+                                            <label class="radio-inline"><input class="@rclass" id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
+                                        }
                                         <span>&nbsp;&nbsp;</span>
                                         <a style="position:relative; top:5px;"onclick="clearAnswer(@item.qID)">Clear</a>
                                     </div>
@@ -170,6 +183,7 @@
                                         You must complete all required fields before submitting for employee to acknowledge.
                                     </p>
                                 </div>
+                                <div><br/></div>
                             </div>
                         }
                         else if ((string)ViewData["ReviewStatus"] == "Acknowledged")
@@ -223,12 +237,12 @@
                         } else if ((string)ViewData["ReviewStatus"] == "Open")
                         {
                             <div class="alert alert-info">
-                                Your supervisor has not yet released the review for your response.
+                                Your supervisor has not yet released for your response.
                             </div>
                         } else if ((string)ViewData["ReviewStatus"] == "Closed")
                         {
                             <div class="alert alert-info">
-                                This review has been closed.
+                                This conversation has been closed.
                             </div>
 
                         }
@@ -238,8 +252,6 @@
         </div>
 
         </div>
-
-
 </form>
 
 @if (role == "Supervisor")
@@ -248,12 +260,12 @@
         <a asp-action="Index" asp-route-emp="@Model.employeeID">Back to @Model.employeeName&apos;s Reviews</a>
     </div>
     <div>
-        <a asp-action="Index">Back to all Employee Reviews</a>
+        <a asp-action="Index">Back to all employee conversations</a>
     </div>
 } else
 {
     <div>
-        <a asp-action="Index">Back to My Reviews</a>
+        <a asp-action="Index">Back to My Conversations</a>
     </div>
 }
 
