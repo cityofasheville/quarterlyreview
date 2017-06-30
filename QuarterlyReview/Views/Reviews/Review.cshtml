@@ -83,6 +83,10 @@
                                     @Html.Raw((item.answer == null) ? "" : item.answer)
                                 </div>
                             }
+                            @if (answersEditable && item.required)
+                            {
+                                <p style="margin-top: 5px; color: orange;"><i>This question must be answered before submitting for employee acknowledgment.</i></p>
+                            }
                         }
                         else if (item.qType == "Y/N")
                         {
@@ -92,8 +96,13 @@
                                         <label class="radio-inline"><input id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
                                         <label class="radio-inline"><input id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
                                         <span>&nbsp;&nbsp;</span>
-                                        <a style="position:relative; top:5px;"onclick="doit(@item.qID)">Clear</a>
+                                        <a style="position:relative; top:5px;"onclick="clearAnswer(@item.qID)">Clear</a>
                                     </div>
+                                    @if (answersEditable && item.required)
+                                    {
+                                        <p style="margin-top: 5px; color: orange;"><i>This question must be answered before submitting for employee acknowledgment.</i></p>
+                                    }
+
                                 </div>
                             </div>
                         }
@@ -140,6 +149,7 @@
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="btn-group">
+                                        <!-- <input type="submit" value="Save" class="btn btn-primary" /> -->
                                         <input type="submit" value="Save" class="btn btn-primary" />
                                     </div>
                                 </div>
@@ -234,7 +244,7 @@
 }
 
 <script>
-    function doit(id) {
+    function clearAnswer(id) {
         document.getElementById("Y-" + id).checked = false;
         document.getElementById("N-" + id).checked = false;
     }
