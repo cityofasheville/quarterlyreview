@@ -373,15 +373,11 @@ namespace QuarterlyReview.Controllers
                  * We have to loop through to find Y/N questions since there may not be a key
                  * for them (if both answers are unchecked).
                  */
-                _logger.LogInformation("Total questions = " + review.Questions.Count());
                  foreach (Questions qst in review.Questions) {
                     _logger.LogInformation("XDeal with question " + qst.QId);
                     if (qst.QtType == "Y/N")
                     {
                         string key = "ynanswer-" + qst.QId;
-                        _logger.LogInformation("We have a Y/N question with id = " + qst.QId + ", key = " + key);
-                        //Questions question = _context.Questions.Find(qst.QId);
-
                         if (form.ContainsKey(key)) {
                             string value = form[key];
                             qst.Answer = (value == "Y") ? "1" : "0";

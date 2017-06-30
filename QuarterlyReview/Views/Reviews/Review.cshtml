@@ -36,7 +36,7 @@
         <a style="float:right;" asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@Model.employeeID" asp-route-printable="Y" asp-route-id="@Model.reviewID">Printable Version</a>
     </div>
 </div>
-<form asp-action="Review">
+<form id="conversation-form" asp-action="Review">
     <div class="row form-horizontal">
         <div class="col-sm-12">
             <fieldset class="reviewQuestionFieldset">
@@ -73,7 +73,12 @@
                         {
                             @if (answersEditable)
                             {
-                                <textarea name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
+                                string rclass = "question";
+                                if (item.required)
+                                {
+                                    rclass = "question qreq";
+                                }
+                                <textarea class="@rclass" name="qanswer-@item.qID" rows="4" cols="200" spellcheck="true">
                                     @Html.Raw((item.answer == null) ? "" : item.answer)
                                 </textarea>
                             }
@@ -83,17 +88,33 @@
                                     @Html.Raw((item.answer == null) ? "" : item.answer)
                                 </div>
                             }
+                            @if (answersEditable && item.required)
+                            {
+                                <p style="margin-top: 5px; color: orange;"><i>This question must be answered before submitting for employee acknowledgment.</i></p>
+                            }
                         }
                         else if (item.qType == "Y/N")
                         {
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="btn-group">
-                                        <label class="radio-inline"><input id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
-                                        <label class="radio-inline"><input id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
+                                        @{
+                                            string rclass = "question";
+                                            if (item.required)
+                                            {
+                                                rclass = "question qreq";
+                                            }
+                                        }
+                                        <label class="radio-inline"><input class="@rclass" id="Y-@item.qID" type="radio" value="Y" name="ynanswer-@item.qID" />Yes</label>
+                                        <label class="radio-inline"><input class="@rclass" id="N-@item.qID" type="radio" value="N" name="ynanswer-@item.qID" />No</label>
                                         <span>&nbsp;&nbsp;</span>
-                                        <a style="position:relative; top:5px;"onclick="doit(@item.qID)">Clear</a>
+                                        <a style="position:relative; top:5px;"onclick="clearAnswer(@item.qID)">Clear</a>
                                     </div>
+                                    @if (answersEditable && item.required)
+                                    {
+                                        <p style="margin-top: 5px; color: orange;"><i>This question must be answered before submitting for employee acknowledgment.</i></p>
+                                    }
+
                                 </div>
                             </div>
                         }
@@ -133,15 +154,21 @@
                                 <div class="col-sm-12">
                                     <div class="btn-group">
                                         <label class="radio-inline"><input type="radio" value="saveonly" checked name="workflow" />Save only</label>
-                                        <label class="radio-inline"><input type="radio" value="sendack" name="workflow" />Submit for employee acknowledgment</label>
+                                        <label class="radio-inline"><input id="send-for-ack" type="radio" value="sendack" name="workflow" />Submit for employee acknowledgment</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="btn-group">
-                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                        <!-- <input type="submit" value="Save" class="btn btn-primary" /> -->
+                                        <input type="button" onclick="doSave()" value="Save" class="btn btn-primary" />
                                     </div>
+                                </div>
+                                <div id="x-warn-required" class="col-sm-12" style="display:none;">
+                                    <p style="color:red;">
+                                        You must complete all required fields before submitting for employee to acknowledge.
+                                    </p>
                                 </div>
                             </div>
                         }
@@ -192,6 +219,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         } else if ((string)ViewData["ReviewStatus"] == "Open")
                         {
                             <div class="alert alert-info">
@@ -234,8 +262,61 @@
 }
 
 <script>
-    function doit(id) {
+
+    function clearAnswer(id) {
         document.getElementById("Y-" + id).checked = false;
         document.getElementById("N-" + id).checked = false;
+    }
+
+    function isRequired(s, val) {
+        var rVal = false;
+        for (v in s) {
+            if (s[v] == val) rVal = true;
+        }
+        return rVal;
+    }
+
+    function doSave() {
+        var ackElem = document.getElementById("send-for-ack");
+        if (!ackElem.checked) {
+            // Just save.
+            document.getElementById("conversation-form").submit();
+            return;
+        }
+
+        // Make sure all required questions are answered.
+        var questions = {};
+        var needEntry = false;
+
+        var elements = document.getElementsByClassName("question");
+        for (var i = 0; i < elements.length; ++i) {
+            var elem = elements[i];
+            var classes = elem.className.split(" ");
+            if (isRequired(classes, "qreq")) {
+                if (elem.id.startsWith("qanswer-")) {
+                    var qid = elem.id.substring(8);
+                    var value = tinyMCE.get(elem.id).getContent().trim();
+                    if (value == '') needEntry = true;
+                }
+                else if (elem.id.startsWith("Y-") || elem.id.startsWith("N-")) {
+                    var qid = elem.id.substring(2);
+                    if (!(qid in questions)) {
+                        questions[qid] = elem.checked ? true : false;
+                    }
+                    else {
+                        if (elem.checked) questions[qid] = true;
+                    }
+                }
+            }
+        }
+        for (key in questions) {
+            if (questions[key] != true) needEntry = true;
+        }
+        if (needEntry) {
+            document.getElementById("x-warn-required").style.display = "block";
+        }
+        else {
+            document.getElementById("conversation-form").submit();
+        }
     }
 </script>

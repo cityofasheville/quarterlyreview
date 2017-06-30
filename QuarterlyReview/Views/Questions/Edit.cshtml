@@ -1,0 +1,78 @@
+@model QuarterlyReview.Models.Questions
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Questions</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="RtId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="RtId" class="form-control" />
+                <span asp-validation-for="RtId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="RId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="RId" class="form-control" asp-items="ViewBag.RId"></select>
+                <span asp-validation-for="RId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="QtId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="QtId" class="form-control" asp-items="ViewBag.QtId"></select>
+                <span asp-validation-for="QtId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="QtOrder" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="QtOrder" class="form-control" />
+                <span asp-validation-for="QtOrder" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="QtType" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="QtType" class="form-control" asp-items="ViewBag.QtType"></select>
+                <span asp-validation-for="QtType" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="QtQuestion" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="QtQuestion" class="form-control" />
+                <span asp-validation-for="QtQuestion" class="text-danger"></span>
+            </div>
+        </div>
+    <input type="hidden" asp-for="QId" />
+        <div class="form-group">
+            <label asp-for="Answer" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Answer" class="form-control" />
+                <span asp-validation-for="Answer" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -38,7 +38,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th width="25%">Current Due By</th>
+                                <th width="25%">Time Since Last Conversation</th>
                                 <th width="25%">Last Conversation Completed</th>
                             </tr>
                         </thead>
@@ -52,17 +52,32 @@
                                         <a asp-area="" asp-controller="Reviews" asp-action="Index" asp-route-emp="@item.EmpId">@item.Employee</a>
                                     </td>
                                     <td>
-                                        @if (item.Position != null) {
-                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId"
-                                                style=@(((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 0 ? "color: red" :
-                                                    ((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 7 ? "color: orange" : "color: #337ab7")>
-                                                @due
-                                            @if (((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 0) {
-                                                <span class="glyphicon glyphicon-exclamation-sign" title="Review Overdue!"></span>
-                                            } else if (((DateTime)item.ReviewBy - DateTime.Today).TotalDays < 7) {
-                                                <span class="glyphicon glyphicon-hourglass" title="Review due in less than a week!"></span>
-
+                                        @if (item.Position != null)
+                                        {
+                                            string rSince = "Never Reviewed";
+                                            string cStyle = (item.LastReviewed == null) ? "color: red" : "color: #337ab7";
+                                            int days = 10000;
+                                            if (item.LastReviewed != null)
+                                            {
+                                                days = DateTime.Now.Subtract((DateTime)item.LastReviewed).Days;
+                                                if (days >= 90) { cStyle = "color: red"; }
+                                                else if (days > 83) { cStyle = "color: orange"; }
+                                                rSince = String.Format("{0} days", days);
                                             }
+
+
+                                            <a asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@item.EmpId"
+                                               style="@cStyle")>
+                                                @rSince
+                                                @if (days >= 90)
+                                                {
+                                                    <span class="glyphicon glyphicon-exclamation-sign" title="Review Overdue!"></span>
+                                                }
+                                                else if (days > 83)
+                                                {
+                                                    <span class="glyphicon glyphicon-hourglass" title="Review due in less than a week!"></span>
+
+                                                }
                                             </a>
                                         }
                                         else
