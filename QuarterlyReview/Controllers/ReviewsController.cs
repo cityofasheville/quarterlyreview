@@ -89,6 +89,7 @@ namespace QuarterlyReview.Controllers
         // GET: Reviews
         public async Task<IActionResult> Index(string emp)
         {
+            _logger.LogInformation("XXX - At top with authenticated = " + User.Identity.IsAuthenticated);
             if (!User.Identity.IsAuthenticated) {
                 return RedirectToRoute(new
                 {
