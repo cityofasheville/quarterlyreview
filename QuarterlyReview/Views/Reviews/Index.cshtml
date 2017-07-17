@@ -181,7 +181,7 @@
                 @if (myReviews.Where(o => o.status == "Closed").Count() == 0)
                 {
                     <div class="alert alert-warning">
-                        No past reviews found.<br/>
+                        No past conversations found.<br/>
                     </div>
                 }
                 else
@@ -189,9 +189,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th width="35%">Review Period</th>
+                                <th width="35%">Period</th>
                                 <th width="20%">Date Completed</th>
-                                <th>Reviewer</th>
+                                <th>Supervisor</th>
                             </tr>
                         </thead>
                         <tbody>

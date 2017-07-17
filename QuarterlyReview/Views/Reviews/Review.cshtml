@@ -30,7 +30,7 @@
 }
 <div class="row">
     <div class="col-md-10">
-        <h2>Review of @Model.employeeName by @Model.reviewerName</h2>
+        <h2>Conversation between @Model.employeeName and @Model.reviewerName</h2>
     </div>
     <div class="col-md-2">
         <a style="float:right;" asp-area="" asp-controller="Reviews" asp-action="Review" asp-route-emp="@Model.employeeID" asp-route-printable="Y" asp-route-id="@Model.reviewID">Printable Version</a>
@@ -40,7 +40,7 @@
     <div class="row form-horizontal">
         <div class="col-sm-12">
             <fieldset class="reviewQuestionFieldset">
-                <legend>Review period</legend>
+                <legend>Period</legend>
                 <div class="form-group">
                     <label for="startDate" class="col-xs-2 control-label">From:</label>
                     <div class="col-xs-4">
@@ -162,7 +162,7 @@
                     {
                         if ((string)ViewData["ReviewStatus"] == "Open")
                         {
-                            <p><i>Please discuss this review with your employee before submitting for their acknowledgment.</i></p>
+                            <p><i>Please discuss your feedback with your employee before submitting for their acknowledgement.</i></p>
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="btn-group">
@@ -216,7 +216,7 @@
                     {
                         if ((string)ViewData["ReviewStatus"] == "Ready")
                         {
-                            <p><i>By acknowledging, you affirm that you have read this review and discussed it with your supervisor.</i></p>
+                            <p><i>By acknowledging, you affirm that you have read this feedback and discussed it with your supervisor.</i></p>
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="btn-group">
@@ -257,7 +257,7 @@
 @if (role == "Supervisor")
 {
     <div>
-        <a asp-action="Index" asp-route-emp="@Model.employeeID">Back to @Model.employeeName&apos;s Reviews</a>
+        <a asp-action="Index" asp-route-emp="@Model.employeeID">Back to @Model.employeeName&apos;s Conversations</a>
     </div>
     <div>
         <a asp-action="Index">Back to all employee conversations</a>
